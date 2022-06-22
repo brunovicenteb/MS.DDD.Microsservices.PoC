@@ -35,16 +35,12 @@ public class BenefitApi : ManagedController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateBenefit([FromBody] Beneficiary beneficiary)
     {
-        Func<Task<object>> execute = async delegate
-        {
-            return await Create(beneficiary);
-        };
         Func<object, IActionResult> action = delegate (object result)
         {
             Beneficiary c = result as Beneficiary;
             return CreatedAtAction(nameof(Get).ToLower(), new { id = c.ID }, result);
         };
-        return await TryExecute(action, execute);
+        return await TryExecute(action, async () => await Create(beneficiary));
     }
 
     private async Task<List<Beneficiary>> GetAllBeneficiary()
