@@ -1,2 +1,3 @@
-# MS.DDD.Microsservices.PoC
+Microsservices.PoC
+
 PoC para validação do conceito da MS de arquitetura DDD para um microsserviço.
