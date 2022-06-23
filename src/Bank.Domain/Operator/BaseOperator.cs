@@ -15,7 +15,7 @@ public abstract class BaseOperator
     {
         var erros = new StringBuilder();
         uint nextID = Interlocked.Increment(ref Count);
-        var beneficiary = new Beneficiary(nextID, parentID, Type, name, cpf, birthDate);
+        var beneficiary = new Beneficiary(nextID, parentID, Type, name, cpf, birthDate, DateTime.UtcNow, null);
         beneficiary.Validate(erros);
         ValidateBeneficiary(erros, beneficiary);
         var foundedErros = erros.ToString();

@@ -3,6 +3,7 @@ using Benefit.Domain.BeneficiaryAggregate;
 using System.Collections.Concurrent;
 using Benefit.Domain.Operator;
 using Toolkit.Exceptions;
+using Benefit.API.ValueObject;
 
 namespace MS.DDD.Microsservices.PoC.Benefit.API.Controllers;
 
@@ -33,7 +34,7 @@ public class BenefitApi : ManagedController
     [ProducesResponseType(typeof(Beneficiary), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateBenefit([FromBody] Beneficiary beneficiary)
+    public async Task<IActionResult> CreateBenefit([FromBody] BeneficiaryVO beneficiary)
     {
         Func<object, IActionResult> action = delegate (object result)
         {
@@ -57,13 +58,13 @@ public class BenefitApi : ManagedController
         throw new NotFoundException("Beneficiary not found.");
     }
 
-    private async Task<Beneficiary> Create(Beneficiary beneficiary)
+    private async Task<Beneficiary> Create(BeneficiaryVO beneficiaryVO)
     {
         await Task.CompletedTask;
-        if (beneficiary == null)
+        if (beneficiaryVO == null)
             return null;
-        BaseOperator op = OperatorFactory.CreateOperator(beneficiary.Operator);
-        beneficiary = op.CreateBeneficiary(beneficiary.ParentID, beneficiary.Name, beneficiary.CPF, beneficiary.BirthDate);
+        BaseOperator op = OperatorFactory.CreateOperator(beneficiaryVO.Operator);
+        Beneficiary beneficiary = op.CreateBeneficiary(beneficiaryVO.ParentID, beneficiaryVO.Name, beneficiaryVO.CPF, beneficiaryVO.BirthDate);
         _Cache.TryAdd(beneficiary.ID, beneficiary);
         return beneficiary;
     }

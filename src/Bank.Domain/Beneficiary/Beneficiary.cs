@@ -1,17 +1,19 @@
 ﻿using Toolkit;
 using System.Text;
 using Benefit.Domain.Operator;
+using Toolkit.Data;
 
 namespace Benefit.Domain.BeneficiaryAggregate;
-public class Beneficiary
+public class Beneficiary : TimeCycleEntity
 {
     public Beneficiary()
-    { 
+        : base()
+    {
     }
 
-    public Beneficiary(uint id, uint? parentID, OperatorType operatorType, string name, string cpf, DateTime? birthDate)
+    public Beneficiary(uint id, uint? parentID, OperatorType operatorType, string name, string cpf, DateTime? birthDate, DateTime createAt, DateTime? updateAt)
+        : base(id, createAt, updateAt)
     {
-        ID = id;
         ParentID = parentID;
         Operator = operatorType;
         Name = name;
@@ -19,7 +21,6 @@ public class Beneficiary
         BirthDate = birthDate;
     }
 
-    public uint ID { get; set; }
     public uint? ParentID { get; set; }
     public OperatorType Operator { get; set; }
     public string Name { get; set; }
