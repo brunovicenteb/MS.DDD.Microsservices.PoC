@@ -1,4 +1,5 @@
-﻿using Toolkit.Interfaces;
+﻿using Toolkit.Exceptions;
+using Toolkit.Interfaces;
 
 namespace Toolkit.Data;
 
@@ -17,5 +18,14 @@ public class TimeCycleEntity : BaseEntity, ITimeCycle
     }
 
     public DateTime CreateAt { get; set; }
+    public DateTime? DeletedAt { get; set; }
     public DateTime? UpdateAt { get; set; }
+    public bool IsActive => !DeletedAt.HasValue;
+
+    public void Delete()
+    {
+        if (DeletedAt.HasValue)
+            throw new DomainRuleException("Entity already deleted");
+        DeletedAt = DateTime.UtcNow;
+    }
 }

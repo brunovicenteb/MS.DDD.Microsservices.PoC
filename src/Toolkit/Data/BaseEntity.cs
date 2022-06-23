@@ -9,6 +9,7 @@ public class BaseEntity : IIdentifiable
     }
     public BaseEntity(uint id)
     {
+        ID = id;
     }
     public uint ID { get; set; }
 }

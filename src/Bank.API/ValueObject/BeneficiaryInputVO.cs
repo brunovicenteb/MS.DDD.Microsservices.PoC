@@ -1,7 +1,7 @@
 ﻿using Benefit.Domain.Operator;
 
 namespace Benefit.API.ValueObject;
-public class BeneficiaryVO
+public class BeneficiaryInputVO
 {
     public uint? ParentID { get; set; }
     public OperatorType Operator { get; set; }

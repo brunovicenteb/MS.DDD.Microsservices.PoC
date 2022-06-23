@@ -14,7 +14,7 @@ public class BenefitApi : ManagedController
     private static readonly ConcurrentDictionary<uint, Beneficiary> _Cache = new ConcurrentDictionary<uint, Beneficiary>();
 
     [HttpGet("{id}")]
-    [ProducesResponseType(typeof(Beneficiary), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BeneficiaryOutputVO), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Get(uint id)
@@ -23,7 +23,7 @@ public class BenefitApi : ManagedController
     }
 
     [HttpGet("getall")]
-    [ProducesResponseType(typeof(List<Beneficiary>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<BeneficiaryOutputVO>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAll()
     {
@@ -31,34 +31,34 @@ public class BenefitApi : ManagedController
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(Beneficiary), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(BeneficiaryOutputVO), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateBenefit([FromBody] BeneficiaryVO beneficiary)
+    public async Task<IActionResult> CreateBenefit([FromBody] BeneficiaryInputVO beneficiary)
     {
         Func<object, IActionResult> action = delegate (object result)
         {
-            Beneficiary c = result as Beneficiary;
+            BeneficiaryOutputVO c = result as BeneficiaryOutputVO;
             return CreatedAtAction(nameof(Get).ToLower(), new { id = c.ID }, result);
         };
         return await TryExecute(action, async () => await Create(beneficiary));
     }
 
-    private async Task<List<Beneficiary>> GetAllBeneficiary()
+    private async Task<List<BeneficiaryOutputVO>> GetAllBeneficiary()
     {
         await Task.CompletedTask;
-        return _Cache.Values.ToList();
+        return _Cache.Values.Select(o => new BeneficiaryOutputVO(o)).ToList();
     }
 
-    private async Task<Beneficiary> GetBeneficiaryById(uint id)
+    private async Task<BeneficiaryOutputVO> GetBeneficiaryById(uint id)
     {
         await Task.CompletedTask;
         if (_Cache.TryGetValue(id, out Beneficiary beneficiary))
-            return beneficiary;
+            return new BeneficiaryOutputVO(beneficiary);
         throw new NotFoundException("Beneficiary not found.");
     }
 
-    private async Task<Beneficiary> Create(BeneficiaryVO beneficiaryVO)
+    private async Task<BeneficiaryOutputVO> Create(BeneficiaryInputVO beneficiaryVO)
     {
         await Task.CompletedTask;
         if (beneficiaryVO == null)
@@ -66,6 +66,6 @@ public class BenefitApi : ManagedController
         BaseOperator op = OperatorFactory.CreateOperator(beneficiaryVO.Operator);
         Beneficiary beneficiary = op.CreateBeneficiary(beneficiaryVO.ParentID, beneficiaryVO.Name, beneficiaryVO.CPF, beneficiaryVO.BirthDate);
         _Cache.TryAdd(beneficiary.ID, beneficiary);
-        return beneficiary;
+        return new BeneficiaryOutputVO(beneficiary);
     }
 }
