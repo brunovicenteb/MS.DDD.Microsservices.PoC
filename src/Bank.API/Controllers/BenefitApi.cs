@@ -1,9 +1,10 @@
+using AutoMapper;
 using Toolkit.Web;
-using Benefit.Domain.BeneficiaryAggregate;
-using System.Collections.Concurrent;
-using Benefit.Domain.Operator;
+using Benefit.API.DTO;
 using Toolkit.Exceptions;
-using Benefit.API.ValueObject;
+using Benefit.Domain.Operator;
+using System.Collections.Concurrent;
+using Benefit.Domain.Benefit;
 
 namespace MS.DDD.Microsservices.PoC.Benefit.API.Controllers;
 
@@ -11,10 +12,20 @@ namespace MS.DDD.Microsservices.PoC.Benefit.API.Controllers;
 [Route("[controller]")]
 public class BenefitApi : ManagedController
 {
+    private static readonly Mapper _Mapper;
     private static readonly ConcurrentDictionary<uint, Beneficiary> _Cache = new ConcurrentDictionary<uint, Beneficiary>();
+    static BenefitApi()
+    {
+        var configuration = new MapperConfiguration(cfg =>
+        {
+            cfg.CreateMap<BeneficiaryInDTO, Beneficiary>();
+            cfg.CreateMap<Beneficiary, BeneficiaryOutDTO>();
+        });
+        _Mapper = new Mapper(configuration);
+    }
 
     [HttpGet("{id}")]
-    [ProducesResponseType(typeof(BeneficiaryOutputVO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BeneficiaryOutDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Get(uint id)
@@ -23,7 +34,7 @@ public class BenefitApi : ManagedController
     }
 
     [HttpGet("getall")]
-    [ProducesResponseType(typeof(List<BeneficiaryOutputVO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<BeneficiaryOutDTO>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAll()
     {
@@ -31,34 +42,34 @@ public class BenefitApi : ManagedController
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(BeneficiaryOutputVO), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(BeneficiaryOutDTO), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateBenefit([FromBody] BeneficiaryInputVO beneficiary)
+    public async Task<IActionResult> CreateBenefit([FromBody] BeneficiaryInDTO beneficiary)
     {
         Func<object, IActionResult> action = delegate (object result)
         {
-            BeneficiaryOutputVO c = result as BeneficiaryOutputVO;
+            BeneficiaryOutDTO c = result as BeneficiaryOutDTO;
             return CreatedAtAction(nameof(Get).ToLower(), new { id = c.ID }, result);
         };
         return await TryExecute(action, async () => await Create(beneficiary));
     }
 
-    private async Task<List<BeneficiaryOutputVO>> GetAllBeneficiary()
+    private async Task<List<BeneficiaryOutDTO>> GetAllBeneficiary()
     {
         await Task.CompletedTask;
-        return _Cache.Values.Select(o => new BeneficiaryOutputVO(o)).ToList();
+        return _Cache.Values.Select(o => _Mapper.Map<BeneficiaryOutDTO>(o)).ToList();
     }
 
-    private async Task<BeneficiaryOutputVO> GetBeneficiaryById(uint id)
+    private async Task<BeneficiaryOutDTO> GetBeneficiaryById(uint id)
     {
         await Task.CompletedTask;
         if (_Cache.TryGetValue(id, out Beneficiary beneficiary))
-            return new BeneficiaryOutputVO(beneficiary);
+            return _Mapper.Map<BeneficiaryOutDTO>(beneficiary);
         throw new NotFoundException("Beneficiary not found.");
     }
 
-    private async Task<BeneficiaryOutputVO> Create(BeneficiaryInputVO beneficiaryVO)
+    private async Task<BeneficiaryOutDTO> Create(BeneficiaryInDTO beneficiaryVO)
     {
         await Task.CompletedTask;
         if (beneficiaryVO == null)
@@ -66,6 +77,6 @@ public class BenefitApi : ManagedController
         BaseOperator op = OperatorFactory.CreateOperator(beneficiaryVO.Operator);
         Beneficiary beneficiary = op.CreateBeneficiary(beneficiaryVO.ParentID, beneficiaryVO.Name, beneficiaryVO.CPF, beneficiaryVO.BirthDate);
         _Cache.TryAdd(beneficiary.ID, beneficiary);
-        return new BeneficiaryOutputVO(beneficiary);
+        return _Mapper.Map<BeneficiaryOutDTO>(beneficiary);
     }
 }

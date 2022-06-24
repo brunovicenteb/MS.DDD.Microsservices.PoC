@@ -1,9 +1,8 @@
 ﻿using Toolkit;
 using System.Text;
-using Benefit.Domain.BeneficiaryAggregate;
 using Toolkit.Exceptions;
-
-namespace Benefit.Domain.Operator;
+using Benefit.Domain.Operator;
+using Benefit.Domain.Benefit;
 
 public abstract class BaseOperator
 {
