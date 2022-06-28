@@ -1,5 +1,7 @@
 using Serilog;
 using Benefit.API.IoC;
+using AutoMapper;
+using Benefit.API.Mapping;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +10,8 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 builder.Services.ConfigBenefitApi();
+IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
+builder.Services.AddSingleton(mapper);
 
 var app = builder.Build();
 

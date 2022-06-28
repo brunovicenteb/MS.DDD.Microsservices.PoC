@@ -2,7 +2,7 @@
 using System.Text;
 using Toolkit.Exceptions;
 using Benefit.Domain.Operator;
-using Benefit.Domain.Benefit;
+using Benefit.Domain.AggregatesModel.BeneficiaryAggregate;
 
 public abstract class BaseOperator
 {

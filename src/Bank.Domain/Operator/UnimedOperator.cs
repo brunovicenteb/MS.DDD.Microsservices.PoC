@@ -1,4 +1,4 @@
-﻿using Benefit.Domain.Benefit;
+﻿using Benefit.Domain.AggregatesModel.BeneficiaryAggregate;
 
 namespace Benefit.Domain.Operator
 {
