@@ -18,20 +18,15 @@ public class BaseEntityTest
     }
     #endregion
 
-    [Fact]
-    public void CreatorWithoutParamsTest()
+    [Theory]
+    [InlineData(0)]
+    [InlineData(25)]
+    [InlineData(43)]
+    public void CreatorTest(uint id)
     {
         var newBaseEntity = new NewBaseEntityTest();
-        Assert.Equal((uint)0, newBaseEntity.ID);
+        Assert.Equal(id, newBaseEntity.ID);
     }
-
-    [Fact]
-    public void CreatorWithParamsTest()
-    {
-        var newBaseEntity = new NewBaseEntityTest(25);
-        Assert.Equal((uint)25, newBaseEntity.ID);
-    }
-
 
     [Fact]
     public void GetValidatorsTest()
