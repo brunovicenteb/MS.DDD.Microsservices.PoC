@@ -14,7 +14,7 @@ public abstract class BaseOperator
     {
         var erros = new StringBuilder();
         uint nextID = Interlocked.Increment(ref Count);
-        var beneficiary = new Beneficiary(nextID, parentID, Type, name, cpf, birthDate, DateTime.UtcNow, null);
+        var beneficiary = new Beneficiary(nextID, parentID, Type, name, cpf, birthDate, DateTime.UtcNow, null, null);
         beneficiary.Validate(erros);
         ValidateBeneficiary(erros, beneficiary);
         var foundedErros = erros.ToString();
@@ -28,5 +28,4 @@ public abstract class BaseOperator
         if (beneficiary.CPF.IsEmpty() && IsRequiredCPF(beneficiary))
             erros.AppendLine("The field \"CPF\" cannot be empty.");
     }
-
 }

@@ -18,14 +18,14 @@ public class BenefitApi : ManagedController
     {
         var configuration = new MapperConfiguration(cfg =>
         {
-            cfg.CreateMap<BeneficiaryInDTO, Beneficiary>();
-            cfg.CreateMap<Beneficiary, BeneficiaryOutDTO>();
+            cfg.CreateMap<BeneficiaryResponse, Beneficiary>();
+            cfg.CreateMap<Beneficiary, BeneficiaryCreateRequest>();
         });
         _Mapper = new Mapper(configuration);
     }
 
     [HttpGet("{id}")]
-    [ProducesResponseType(typeof(BeneficiaryOutDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BeneficiaryCreateRequest), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Get(uint id)
@@ -34,7 +34,7 @@ public class BenefitApi : ManagedController
     }
 
     [HttpGet("getall")]
-    [ProducesResponseType(typeof(List<BeneficiaryOutDTO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<BeneficiaryCreateRequest>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAll()
     {
@@ -42,34 +42,34 @@ public class BenefitApi : ManagedController
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(BeneficiaryOutDTO), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(BeneficiaryCreateRequest), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateBenefit([FromBody] BeneficiaryInDTO beneficiary)
+    public async Task<IActionResult> CreateBenefit([FromBody] BeneficiaryResponse beneficiary)
     {
         Func<object, IActionResult> action = delegate (object result)
         {
-            BeneficiaryOutDTO c = result as BeneficiaryOutDTO;
+            BeneficiaryCreateRequest c = result as BeneficiaryCreateRequest;
             return CreatedAtAction(nameof(Get).ToLower(), new { id = c.ID }, result);
         };
         return await TryExecute(action, async () => await Create(beneficiary));
     }
 
-    private async Task<List<BeneficiaryOutDTO>> GetAllBeneficiary()
+    private async Task<List<BeneficiaryCreateRequest>> GetAllBeneficiary()
     {
         await Task.CompletedTask;
-        return _Cache.Values.Select(o => _Mapper.Map<BeneficiaryOutDTO>(o)).ToList();
+        return _Cache.Values.Select(o => _Mapper.Map<BeneficiaryCreateRequest>(o)).ToList();
     }
 
-    private async Task<BeneficiaryOutDTO> GetBeneficiaryById(uint id)
+    private async Task<BeneficiaryCreateRequest> GetBeneficiaryById(uint id)
     {
         await Task.CompletedTask;
         if (_Cache.TryGetValue(id, out Beneficiary beneficiary))
-            return _Mapper.Map<BeneficiaryOutDTO>(beneficiary);
+            return _Mapper.Map<BeneficiaryCreateRequest>(beneficiary);
         throw new NotFoundException("Beneficiary not found.");
     }
 
-    private async Task<BeneficiaryOutDTO> Create(BeneficiaryInDTO beneficiaryVO)
+    private async Task<BeneficiaryCreateRequest> Create(BeneficiaryResponse beneficiaryVO)
     {
         await Task.CompletedTask;
         if (beneficiaryVO == null)
@@ -77,6 +77,6 @@ public class BenefitApi : ManagedController
         BaseOperator op = OperatorFactory.CreateOperator(beneficiaryVO.Operator);
         Beneficiary beneficiary = op.CreateBeneficiary(beneficiaryVO.ParentID, beneficiaryVO.Name, beneficiaryVO.CPF, beneficiaryVO.BirthDate);
         _Cache.TryAdd(beneficiary.ID, beneficiary);
-        return _Mapper.Map<BeneficiaryOutDTO>(beneficiary);
+        return _Mapper.Map<BeneficiaryCreateRequest>(beneficiary);
     }
 }

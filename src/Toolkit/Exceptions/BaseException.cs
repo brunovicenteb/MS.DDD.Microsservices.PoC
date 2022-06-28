@@ -5,6 +5,5 @@ public abstract class BaseException : Exception
     public BaseException(string pMessage)
         : base(pMessage)
     {
-
     }
 }

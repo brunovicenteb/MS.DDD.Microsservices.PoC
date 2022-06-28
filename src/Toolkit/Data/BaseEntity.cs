@@ -1,8 +1,9 @@
-﻿using Toolkit.Interfaces;
+﻿using FluentValidation;
+using Toolkit.Interfaces;
 
 namespace Toolkit.Data;
 
-public class BaseEntity : IIdentifiable
+public abstract class BaseEntity : IIdentifiable
 {
     public BaseEntity()
     {
@@ -12,4 +13,7 @@ public class BaseEntity : IIdentifiable
         ID = id;
     }
     public uint ID { get; set; }
+
+    public virtual IValidator[] GetValidators()
+        => new IValidator[] { };
 }
