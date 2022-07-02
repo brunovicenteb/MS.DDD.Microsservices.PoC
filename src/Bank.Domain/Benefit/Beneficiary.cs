@@ -3,7 +3,7 @@ using System.Text;
 using Toolkit.Data;
 using FluentValidation;
 using Benefit.Domain.Operator;
-using Benefit.Domain.Validators;
+using Benefit.Domain.Benefit.Rules;
 
 namespace Benefit.Domain.Benefit;
 public class Beneficiary : TimeCycleEntity

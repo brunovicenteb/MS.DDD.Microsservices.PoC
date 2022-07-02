@@ -1,10 +1,10 @@
-using AutoMapper;
 using Toolkit.Web;
 using Benefit.API.DTO;
 using Toolkit.Exceptions;
 using Benefit.Domain.Operator;
 using System.Collections.Concurrent;
 using Benefit.Domain.Benefit;
+using Toolkit.Configurations;
 
 namespace MS.DDD.Microsservices.PoC.Benefit.API.Controllers;
 
@@ -12,16 +12,11 @@ namespace MS.DDD.Microsservices.PoC.Benefit.API.Controllers;
 [Route("[controller]")]
 public class BenefitApi : ManagedController
 {
-    private static readonly Mapper _Mapper;
+    private GenericMapper _Mapper;
     private static readonly ConcurrentDictionary<uint, Beneficiary> _Cache = new ConcurrentDictionary<uint, Beneficiary>();
-    static BenefitApi()
+    public BenefitApi(GenericMapper mapper)
     {
-        var configuration = new MapperConfiguration(cfg =>
-        {
-            cfg.CreateMap<BeneficiaryResponse, Beneficiary>();
-            cfg.CreateMap<Beneficiary, BeneficiaryCreateRequest>();
-        });
-        _Mapper = new Mapper(configuration);
+        _Mapper = mapper;
     }
 
     [HttpGet("{id}")]
@@ -58,14 +53,14 @@ public class BenefitApi : ManagedController
     private async Task<List<BeneficiaryCreateRequest>> GetAllBeneficiary()
     {
         await Task.CompletedTask;
-        return _Cache.Values.Select(o => _Mapper.Map<BeneficiaryCreateRequest>(o)).ToList();
+        return _Cache.Values.Select(o => _Mapper.Map<Beneficiary, BeneficiaryCreateRequest>(o)).ToList();
     }
 
     private async Task<BeneficiaryCreateRequest> GetBeneficiaryById(uint id)
     {
         await Task.CompletedTask;
         if (_Cache.TryGetValue(id, out Beneficiary beneficiary))
-            return _Mapper.Map<BeneficiaryCreateRequest>(beneficiary);
+            return _Mapper.Map<Beneficiary, BeneficiaryCreateRequest>(beneficiary);
         throw new NotFoundException("Beneficiary not found.");
     }
 
@@ -77,6 +72,6 @@ public class BenefitApi : ManagedController
         BaseOperator op = OperatorFactory.CreateOperator(beneficiaryVO.Operator);
         Beneficiary beneficiary = op.CreateBeneficiary(beneficiaryVO.ParentID, beneficiaryVO.Name, beneficiaryVO.CPF, beneficiaryVO.BirthDate);
         _Cache.TryAdd(beneficiary.ID, beneficiary);
-        return _Mapper.Map<BeneficiaryCreateRequest>(beneficiary);
+        return _Mapper.Map<Beneficiary, BeneficiaryCreateRequest>(beneficiary);
     }
 }
