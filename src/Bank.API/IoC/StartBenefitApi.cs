@@ -1,6 +1,7 @@
 using System.Reflection;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
+using Toolkit.Configurations;
 
 namespace Benefit.API.IoC;
 
@@ -8,6 +9,7 @@ public static class StartBenefitApi
 {
     public static void ConfigBenefitApi(this IServiceCollection services)
     {
+        services.AddSingleton<GenericMapper>();
         services.AddControllers()
             .AddNewtonsoftJson(o => o.SerializerSettings.Converters.Add(new StringEnumConverter()));
         services.AddSwaggerGenNewtonsoftSupport();

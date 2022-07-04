@@ -2,7 +2,7 @@
 using Benefit.Domain.Benefit;
 using FluentValidation;
 
-namespace Benefit.Domain.Validators;
+namespace Benefit.Domain.Benefit.Rules;
 public class BeneficiaryValidator : AbstractValidator<Beneficiary>
 {
     public BeneficiaryValidator()
