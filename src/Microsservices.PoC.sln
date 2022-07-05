@@ -23,6 +23,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Benefit.Domain.Test", "Bene
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Benefit.Consumer.Worker", "Benefit.Consumer.Worker\Benefit.Consumer.Worker.csproj", "{CEB0347A-0FEF-44F0-8DBC-DBD78B8F5CE9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Service", "Service", "{3D7EABA8-1775-4CB5-96FC-20E483FBA671}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Benefit.Service", "Benefit.Service\Benefit.Service.csproj", "{773839F8-E72A-4D94-BBBA-ECBE19294E82}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +57,10 @@ Global
 		{CEB0347A-0FEF-44F0-8DBC-DBD78B8F5CE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CEB0347A-0FEF-44F0-8DBC-DBD78B8F5CE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CEB0347A-0FEF-44F0-8DBC-DBD78B8F5CE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{773839F8-E72A-4D94-BBBA-ECBE19294E82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{773839F8-E72A-4D94-BBBA-ECBE19294E82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{773839F8-E72A-4D94-BBBA-ECBE19294E82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{773839F8-E72A-4D94-BBBA-ECBE19294E82}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -64,6 +72,7 @@ Global
 		{BEDE8425-C980-4461-A3CE-EF90F8420A84} = {F1510846-1C56-4D9C-B619-854F256E2341}
 		{D85AC567-BF55-464F-ADE3-A294082965CD} = {F1510846-1C56-4D9C-B619-854F256E2341}
 		{CEB0347A-0FEF-44F0-8DBC-DBD78B8F5CE9} = {0277A7BB-0375-403F-859D-A0E4F3057F7C}
+		{773839F8-E72A-4D94-BBBA-ECBE19294E82} = {3D7EABA8-1775-4CB5-96FC-20E483FBA671}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EE571778-8F62-4A87-AC43-0FBAC40F7DF4}
