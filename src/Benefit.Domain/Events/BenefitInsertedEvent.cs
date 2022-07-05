@@ -1,7 +1,8 @@
-﻿using Benefit.Domain.Operator;
+using Benefit.Domain.Benefit;
 
-namespace Benefit.API.DTO;
-public class BeneficiaryResponse
+namespace Benefit.Domain.Events;
+
+public class BenefitInsertedEvent
 {
     public uint? ParentID { get; set; }
     public OperatorType Operator { get; set; }

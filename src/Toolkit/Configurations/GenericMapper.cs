@@ -11,16 +11,16 @@ namespace Toolkit.Configurations
     {
         public TDestination Map<TSource, TDestination>(TSource source)
         {
-            Mapper _mapper = new Mapper
+            Mapper mapper = new Mapper
             (
                 new MapperConfiguration
                 (
                     config => config.CreateMap<TSource, TDestination>().ReverseMap()
                 )
             );
-
-            return _mapper.Map<TDestination>(source);
+            return mapper.Map<TDestination>(source);
         }
+
         public List<TDestination> MapList<TSource, TDestination>(List<TSource> sourceList)
         {
             var convertedList = new List<TDestination>();
@@ -28,5 +28,4 @@ namespace Toolkit.Configurations
             return convertedList;
         }
     }
-
 }

@@ -1,10 +1,11 @@
+using MassTransit;
 using Toolkit.Web;
 using Benefit.API.DTO;
 using Toolkit.Exceptions;
-using Benefit.Domain.Operator;
 using System.Collections.Concurrent;
 using Benefit.Domain.Benefit;
 using Toolkit.Configurations;
+using Benefit.Domain.Events;
 
 namespace MS.DDD.Microsservices.PoC.Benefit.API.Controllers;
 
@@ -12,15 +13,17 @@ namespace MS.DDD.Microsservices.PoC.Benefit.API.Controllers;
 [Route("[controller]")]
 public class BenefitApi : ManagedController
 {
-    private GenericMapper _Mapper;
+    readonly IBus _Bus;
+    private readonly GenericMapper _Mapper;
     private static readonly ConcurrentDictionary<uint, Beneficiary> _Cache = new ConcurrentDictionary<uint, Beneficiary>();
-    public BenefitApi(GenericMapper mapper)
+    public BenefitApi(GenericMapper mapper, IBus bus)
     {
         _Mapper = mapper;
+        _Bus = bus;
     }
 
     [HttpGet("{id}")]
-    [ProducesResponseType(typeof(BeneficiaryCreateRequest), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BeneficiaryResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Get(uint id)
@@ -29,7 +32,7 @@ public class BenefitApi : ManagedController
     }
 
     [HttpGet("getall")]
-    [ProducesResponseType(typeof(List<BeneficiaryCreateRequest>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<BeneficiaryResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAll()
     {
@@ -37,17 +40,14 @@ public class BenefitApi : ManagedController
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(BeneficiaryCreateRequest), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status202Accepted)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateBenefit([FromBody] BeneficiaryResponse beneficiary)
+    public async Task<IActionResult> CreateBenefit([FromBody] BeneficiaryCreateRequest beneficiary)
     {
-        Func<object, IActionResult> action = delegate (object result)
-        {
-            BeneficiaryCreateRequest c = result as BeneficiaryCreateRequest;
-            return CreatedAtAction(nameof(Get).ToLower(), new { id = c.ID }, result);
-        };
-        return await TryExecute(action, async () => await Create(beneficiary));
+        var beneficiaryEvt = _Mapper.Map<BeneficiaryCreateRequest, BenefitInsertedEvent>(beneficiary);
+        await _Bus.Publish(beneficiaryEvt);
+        return Accepted();
     }
 
     private async Task<List<BeneficiaryCreateRequest>> GetAllBeneficiary()
@@ -62,16 +62,5 @@ public class BenefitApi : ManagedController
         if (_Cache.TryGetValue(id, out Beneficiary beneficiary))
             return _Mapper.Map<Beneficiary, BeneficiaryCreateRequest>(beneficiary);
         throw new NotFoundException("Beneficiary not found.");
-    }
-
-    private async Task<BeneficiaryCreateRequest> Create(BeneficiaryResponse beneficiaryVO)
-    {
-        await Task.CompletedTask;
-        if (beneficiaryVO == null)
-            return null;
-        BaseOperator op = OperatorFactory.CreateOperator(beneficiaryVO.Operator);
-        Beneficiary beneficiary = op.CreateBeneficiary(beneficiaryVO.ParentID, beneficiaryVO.Name, beneficiaryVO.CPF, beneficiaryVO.BirthDate);
-        _Cache.TryAdd(beneficiary.ID, beneficiary);
-        return _Mapper.Map<Beneficiary, BeneficiaryCreateRequest>(beneficiary);
     }
 }

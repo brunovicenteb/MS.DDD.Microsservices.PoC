@@ -1,10 +1,10 @@
 ﻿using Toolkit;
 using System.Text;
 using Toolkit.Exceptions;
-using Benefit.Domain.Operator;
 using Benefit.Domain.Benefit;
 
-public abstract class BaseOperator
+namespace Benefit.Service.Operator;
+public abstract class BaseOperatorService
 {
     private static uint Count;
     protected abstract OperatorType Type { get; }
