@@ -11,9 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Toolkit", "Toolkit\Toolkit.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{0A5778FD-79ED-499A-A5E3-8A30F7434822}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Benefit.API", "Bank.API\Benefit.API.csproj", "{42788BBA-9B92-45FB-B0E3-4345691787DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Benefit.API", "Benefit.API\Benefit.API.csproj", "{42788BBA-9B92-45FB-B0E3-4345691787DA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Benefit.Domain", "Bank.Domain\Benefit.Domain.csproj", "{F07285A2-5A76-430B-8E89-BF3096D2F5ED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Benefit.Domain", "Benefit.Domain\Benefit.Domain.csproj", "{F07285A2-5A76-430B-8E89-BF3096D2F5ED}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{F1510846-1C56-4D9C-B619-854F256E2341}"
 EndProject
