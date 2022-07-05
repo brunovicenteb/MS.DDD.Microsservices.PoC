@@ -21,10 +21,11 @@ public static class BrokerStarter
                 collection.AddMassTransit(busRegistration =>
                 {
                     var factory = new T();
-                    factory.RegisterConsumers(busRegistration);
+                    factory.RegisterConsumers(collection, busRegistration);
                     busRegistration.UsingRabbitMq((ctx, cfg) =>
                     {
                         cfg.Host(host);
+                        cfg.ConfigureEndpoints(ctx);
                     });
                 });
             });
@@ -41,6 +42,7 @@ public static class BrokerStarter
             {
                 cfg.Host(host);
                 cfg.UseMessageRetry(retry => { retry.Interval(3, TimeSpan.FromSeconds(5)); });
+                cfg.ConfigureEndpoints(ctx);
             });
         });
     }

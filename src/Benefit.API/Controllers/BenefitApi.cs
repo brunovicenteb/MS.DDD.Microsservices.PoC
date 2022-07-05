@@ -15,7 +15,7 @@ public class BenefitApi : ManagedController
 {
     readonly IBus _Bus;
     private readonly GenericMapper _Mapper;
-    private static readonly ConcurrentDictionary<uint, Beneficiary> _Cache = new ConcurrentDictionary<uint, Beneficiary>();
+    private static readonly ConcurrentDictionary<string, Beneficiary> _Cache = new ConcurrentDictionary<string, Beneficiary>();
     public BenefitApi(GenericMapper mapper, IBus bus)
     {
         _Mapper = mapper;
@@ -26,7 +26,7 @@ public class BenefitApi : ManagedController
     [ProducesResponseType(typeof(BeneficiaryResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Get(uint id)
+    public async Task<IActionResult> Get(string id)
     {
         return await TryExecuteOK(async () => await GetBeneficiaryById(id));
     }
@@ -43,7 +43,7 @@ public class BenefitApi : ManagedController
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateBenefit([FromBody] BeneficiaryCreateRequest beneficiary)
+    public async Task<AcceptedResult> CreateBenefit([FromBody] BeneficiaryCreateRequest beneficiary)
     {
         var beneficiaryEvt = _Mapper.Map<BeneficiaryCreateRequest, BenefitInsertedEvent>(beneficiary);
         await _Bus.Publish(beneficiaryEvt);
@@ -56,7 +56,7 @@ public class BenefitApi : ManagedController
         return _Cache.Values.Select(o => _Mapper.Map<Beneficiary, BeneficiaryCreateRequest>(o)).ToList();
     }
 
-    private async Task<BeneficiaryCreateRequest> GetBeneficiaryById(uint id)
+    private async Task<BeneficiaryCreateRequest> GetBeneficiaryById(string id)
     {
         await Task.CompletedTask;
         if (_Cache.TryGetValue(id, out Beneficiary beneficiary))
