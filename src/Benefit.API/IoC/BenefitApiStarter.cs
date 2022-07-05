@@ -3,12 +3,15 @@ using Toolkit.Configurations;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
 using Toolkit.MessageBroker;
+using Benefit.Domain.Interfaces;
+using Benefit.Service.Infra;
+using Toolkit.Mongo;
 
 namespace Benefit.API.IoC;
 
 public static class StartBenefitApi
 {
-    public static void ConfigBenefitApi(this IServiceCollection services)
+    public static IServiceCollection ConfigBenefitApi(this IServiceCollection services)
     {
         services.AddSingleton<GenericMapper>();
         services.AddControllers()
@@ -25,6 +28,9 @@ public static class StartBenefitApi
             opt.IncludeXmlComments(xmlPath);
         });
         services.AddProducers();
+        services.AddMongoDb("BenefitMongoConnection", "BenefitMongoDb");
+        services.AddScoped<IBenefitRepository, BenefitRepository>();
+        return services;
     }
 
     public static void UseBenefitApi(this IApplicationBuilder app)

@@ -1,11 +1,10 @@
 using MassTransit;
 using Toolkit.Web;
 using Benefit.API.DTO;
-using Toolkit.Exceptions;
-using System.Collections.Concurrent;
 using Benefit.Domain.Benefit;
 using Toolkit.Configurations;
 using Benefit.Domain.Events;
+using Benefit.Domain.Interfaces;
 
 namespace MS.DDD.Microsservices.PoC.Benefit.API.Controllers;
 
@@ -13,15 +12,29 @@ namespace MS.DDD.Microsservices.PoC.Benefit.API.Controllers;
 [Route("[controller]")]
 public class BenefitApi : ManagedController
 {
-    readonly IBus _Bus;
-    private readonly GenericMapper _Mapper;
-    private static readonly ConcurrentDictionary<string, Beneficiary> _Cache = new ConcurrentDictionary<string, Beneficiary>();
-    public BenefitApi(GenericMapper mapper, IBus bus)
+    public BenefitApi(IBus bus, GenericMapper mapper, IBenefitRepository benefitRepository)
     {
-        _Mapper = mapper;
         _Bus = bus;
+        _Mapper = mapper;
+        _BenefitRepository = benefitRepository;
+    }
+    private readonly IBus _Bus;
+    private readonly GenericMapper _Mapper;
+    private readonly IBenefitRepository _BenefitRepository;
+
+    /// <summary>Returns the registered benefits with the possibility of pagination.</summary>
+    /// <param name="limit">Maximum number of results possible.</param>
+    /// <param name="start">Skip a specific number of entries. This feature is especially useful for pagination.</param>
+    [HttpGet]
+    [ProducesResponseType(typeof(List<BeneficiaryResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> Get(int? limit = 10, int? start = 0)
+    {
+        return await TryExecuteOK(async () => await GetBeneficiaries(limit, start));
     }
 
+    /// <summary>Returns an benefit by identifier.</summary>
+    /// <param name="id">Identifier of benefit.</param>
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(BeneficiaryResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -31,14 +44,7 @@ public class BenefitApi : ManagedController
         return await TryExecuteOK(async () => await GetBeneficiaryById(id));
     }
 
-    [HttpGet("getall")]
-    [ProducesResponseType(typeof(List<BeneficiaryResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetAll()
-    {
-        return await TryExecuteOK(async () => await GetAllBeneficiary());
-    }
-
+    /// <summary>Create a new benefit.</summary>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -50,17 +56,17 @@ public class BenefitApi : ManagedController
         return Accepted();
     }
 
-    private async Task<List<BeneficiaryCreateRequest>> GetAllBeneficiary()
+    private async Task<List<BeneficiaryResponse>> GetBeneficiaries(int? limit = 10, int? start = 0)
     {
         await Task.CompletedTask;
-        return _Cache.Values.Select(o => _Mapper.Map<Beneficiary, BeneficiaryCreateRequest>(o)).ToList();
+        return _BenefitRepository.Get(limit ?? 10, start ?? 0)
+            .Select(o => _Mapper.Map<Beneficiary, BeneficiaryResponse>(o)).ToList();
     }
 
-    private async Task<BeneficiaryCreateRequest> GetBeneficiaryById(string id)
+    private async Task<BeneficiaryResponse> GetBeneficiaryById(string id)
     {
         await Task.CompletedTask;
-        if (_Cache.TryGetValue(id, out Beneficiary beneficiary))
-            return _Mapper.Map<Beneficiary, BeneficiaryCreateRequest>(beneficiary);
-        throw new NotFoundException("Beneficiary not found.");
+        var beneficiary = _BenefitRepository.GetObjectByID(id);
+        return _Mapper.Map<Beneficiary, BeneficiaryResponse>(beneficiary);
     }
 }

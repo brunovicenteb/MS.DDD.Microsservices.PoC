@@ -5,9 +5,8 @@ using Toolkit.Mongo;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var host = Host.CreateDefaultBuilder(args)
-    .AddMongoDb("BenefitMongoConnection", "BenefitMongoDb")
-    .AddConsumers<BenefitConsumerFactory>()
-    .Build();
+builder.Services.AddMongoDb("BenefitMongoConnection", "BenefitMongoDb");
+builder.Services.AddConsumers<BenefitConsumerFactory>();
 
-host.Run();
+var app = builder.Build();
+app.Run();

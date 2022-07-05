@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace Toolkit.Mongo;
 
@@ -10,11 +10,12 @@ public static class MongoEnvironment
         => _StringConnection;
     public static string DataBaseName
         => _DataBaseName;
-    public static IHostBuilder AddMongoDb(this IHostBuilder builder,
+   
+    public static IServiceCollection AddMongoDb(this IServiceCollection services,
         string stringConnection, string databaseName)
     {
-        if (builder == null)
-            throw new ArgumentNullException("Builder not provided. Unable to start Mongo Environment.");
+        if (services == null)
+            throw new ArgumentNullException("Services Collection not provided. Unable to start Mongo Environment.");
         if (stringConnection.IsEmpty())
             throw new ArgumentNullException("Mongo Connection not provided. Unable to start Mongo Environment.");
         _StringConnection = Environment.GetEnvironmentVariable(stringConnection);
@@ -23,6 +24,6 @@ public static class MongoEnvironment
         _DataBaseName = Environment.GetEnvironmentVariable(databaseName);
         if (_DataBaseName.IsEmpty())
             throw new ArgumentNullException($"Unable to identify {_DataBaseName} variable. Unable to start Mongo Environment.");
-        return builder;
+        return services;
     }
 }
