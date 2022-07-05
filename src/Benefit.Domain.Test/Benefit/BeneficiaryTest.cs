@@ -1,5 +1,4 @@
 using Benefit.Domain.Benefit;
-using Benefit.Domain.Operator;
 
 namespace Benefit.Domain.Test.Benefit;
 

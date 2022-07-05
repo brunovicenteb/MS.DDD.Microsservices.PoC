@@ -2,7 +2,6 @@
 using System.Text;
 using Toolkit.Data;
 using FluentValidation;
-using Benefit.Domain.Operator;
 using Benefit.Domain.Benefit.Rules;
 
 namespace Benefit.Domain.Benefit;

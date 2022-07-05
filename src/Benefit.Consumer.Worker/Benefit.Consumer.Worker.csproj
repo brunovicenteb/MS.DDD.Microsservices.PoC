@@ -17,7 +17,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Bank.Domain\Benefit.Domain.csproj" />
+	  <ProjectReference Include="..\Benefit.Domain\Benefit.Domain.csproj" />
+	  <ProjectReference Include="..\Benefit.Service\Benefit.Service.csproj" />
 	  <ProjectReference Include="..\Toolkit\Toolkit.csproj" />
 	</ItemGroup>
 </Project>

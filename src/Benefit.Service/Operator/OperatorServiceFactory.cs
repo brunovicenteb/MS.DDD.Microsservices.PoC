@@ -1,10 +1,11 @@
 ﻿using Toolkit.Exceptions;
+using Benefit.Domain.Benefit;
 
-namespace Benefit.Domain.Operator;
+namespace Benefit.Service.Operator;
 
-public static class OperatorFactory
+public static class OperatorServiceFactory
 {
-    public static BaseOperator CreateOperator(OperatorType type)
+    public static BaseOperatorService CreateOperator(OperatorType type)
     {
         switch (type)
         {

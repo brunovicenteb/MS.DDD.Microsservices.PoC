@@ -2,7 +2,6 @@ using MassTransit;
 using Toolkit.Web;
 using Benefit.API.DTO;
 using Toolkit.Exceptions;
-using Benefit.Domain.Operator;
 using System.Collections.Concurrent;
 using Benefit.Domain.Benefit;
 using Toolkit.Configurations;

@@ -1,4 +1,4 @@
-﻿namespace Benefit.Domain.Operator;
+﻿namespace Benefit.Domain.Benefit;
 
 public enum OperatorType
 {

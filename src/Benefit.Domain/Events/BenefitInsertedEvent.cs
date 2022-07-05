@@ -1,4 +1,4 @@
-using Benefit.Domain.Operator;
+using Benefit.Domain.Benefit;
 
 namespace Benefit.Domain.Events;
 
