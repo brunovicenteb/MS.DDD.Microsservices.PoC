@@ -1,7 +1,8 @@
 using System.Reflection;
+using Toolkit.Configurations;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
-using Toolkit.Configurations;
+using Toolkit.MessageBroker;
 
 namespace Benefit.API.IoC;
 
@@ -23,6 +24,7 @@ public static class StartBenefitApi
             xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             opt.IncludeXmlComments(xmlPath);
         });
+        services.AddProducers();
     }
 
     public static void UseBenefitApi(this IApplicationBuilder app)
