@@ -1,6 +1,5 @@
 using Toolkit.MessageBroker;
 using Benefit.Domain.Events;
-using Toolkit.Configurations;
 using Benefit.Domain.Operator;
 using Benefit.Domain.Interfaces;
 
@@ -8,8 +7,7 @@ namespace Benefit.Service.Workers;
 
 public sealed class BenefitInsertedConsumer : BrokerChainedConsumer<BenefitInsertedEvent, BenefitCreatedEvent>
 {
-    public BenefitInsertedConsumer(IBenefitRepository benefitRepository, GenericMapper mapper)
-        : base(mapper)
+    public BenefitInsertedConsumer(IBenefitRepository benefitRepository)
     {
         _BenefitRepository = benefitRepository;
     }
@@ -20,7 +18,7 @@ public sealed class BenefitInsertedConsumer : BrokerChainedConsumer<BenefitInser
     {
         var op = Operator.CreateOperator(eventData.Operator);
         var beneficiary = op.CreateBeneficiary(eventData.Name, eventData.CPF, eventData.BirthDate);
-        _BenefitRepository.Add(beneficiary);
-        return BrokerConsumerResult.Sucess;
+        beneficiary = _BenefitRepository.Add(beneficiary);
+        return Sucess(beneficiary);
     }
 }

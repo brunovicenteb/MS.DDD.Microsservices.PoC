@@ -1,14 +1,14 @@
 using Refit;
 using MassTransit;
 using Benefit.Service.Infra;
-using Toolkit.MessageBroker;
 using Benefit.Domain.Interfaces;
 using Benefit.Service.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using Toolkit.Register;
 
 namespace Benefit.Service.Workers;
 
-public sealed class BenefitConsumerFactory : BrokerConsumerFactory
+public sealed class BenefitConsumerFactory : ResourcesFactory
 {
     public static string ImdbKey;
     private const string _ImdbKeyVariableName = "IMDB_API_KEY";

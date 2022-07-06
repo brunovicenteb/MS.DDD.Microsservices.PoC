@@ -1,3 +1,4 @@
+using AutoMapper;
 using MassTransit;
 using Toolkit.Web;
 using Benefit.API.DTO;
@@ -17,10 +18,18 @@ public class BenefitApi : ManagedController
         _Bus = bus;
         _Mapper = mapper;
         _BenefitRepository = benefitRepository;
+        _ResponseMapperConfig = new MapperConfiguration(cfg =>
+        {
+            cfg.CreateMap<Beneficiary, BeneficiaryResponse>();
+            cfg.CreateMap<Work, BeneficiaryWorkResponse>();
+        });
+        _ResponseMapperConfig.AssertConfigurationIsValid();
     }
+
     private readonly IBus _Bus;
     private readonly GenericMapper _Mapper;
     private readonly IBenefitRepository _BenefitRepository;
+    private readonly MapperConfiguration _ResponseMapperConfig;
 
     /// <summary>Returns the registered benefits with the possibility of pagination.</summary>
     /// <param name="limit">Maximum number of results possible.</param>
@@ -59,8 +68,9 @@ public class BenefitApi : ManagedController
     private async Task<List<BeneficiaryResponse>> GetBeneficiaries(int? limit = 10, int? start = 0)
     {
         await Task.CompletedTask;
+        var mapper = _ResponseMapperConfig.CreateMapper();
         return _BenefitRepository.Get(limit ?? 10, start ?? 0)
-            .Select(o => _Mapper.Map<Beneficiary, BeneficiaryResponse>(o)).ToList();
+            .Select(o => mapper.Map<Beneficiary, BeneficiaryResponse>(o)).ToList();
     }
 
     private async Task<BeneficiaryResponse> GetBeneficiaryById(string id)

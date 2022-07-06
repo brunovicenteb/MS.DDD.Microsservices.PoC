@@ -21,11 +21,11 @@ public sealed class BenefitLoadMoviesConsumer : BrokerConsumer<BenefitCreatedEve
     {
         var benefit = _BenefitRepository.GetObjectByID(message.ID);
         var imdbPerson = _ApiClient.GetPerson(BenefitConsumerFactory.ImdbKey, benefit.Name).Result;
-        if (imdbPerson == null || imdbPerson.results == null)
-            return BrokerConsumerResult.Sucess;
+        if (imdbPerson == null || imdbPerson.results == null || imdbPerson.results.Count == 0)
+            return Sucess();
         benefit.Works = imdbPerson.results
             .Select(o => new Work(o.title, o.image, o.description)).ToArray();
         _BenefitRepository.Update(benefit);
-        return BrokerConsumerResult.Sucess;
+        return Sucess();
     }
 }
