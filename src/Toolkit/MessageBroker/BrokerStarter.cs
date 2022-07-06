@@ -6,7 +6,7 @@ namespace Toolkit.MessageBroker;
 
 public static class BrokerStarter
 {
-    public static IServiceCollection AddConsumers<T>(this IServiceCollection services, string variableName = "RabbitMq")
+    public static IServiceCollection AddConsumers<T>(this IServiceCollection services, string variableName = "RABBIT_MQ")
         where T : BrokerConsumerFactory, new()
     {
         if (services == null)
@@ -29,7 +29,7 @@ public static class BrokerStarter
         return services;
     }
 
-    public static IServiceCollection AddProducers(this IServiceCollection services, string variableName = "RabbitMq")
+    public static IServiceCollection AddProducers(this IServiceCollection services, string variableName = "RABBIT_MQ")
     {
         if (services == null)
             throw new ArgumentNullException("Services Collection not provided. Unable to start consumer target host.");

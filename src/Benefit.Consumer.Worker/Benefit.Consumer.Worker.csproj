@@ -3,9 +3,9 @@
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<UserSecretsId>Benefit-Consumer-Worker-ADAFA160-9721-4C0D-8699-91967571B3B8</UserSecretsId>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 	</PropertyGroup>
-	
+
 	<ItemGroup>
 	  <ProjectReference Include="..\Benefit.Service\Benefit.Service.csproj" />
 	  <ProjectReference Include="..\Toolkit\Toolkit.csproj" />

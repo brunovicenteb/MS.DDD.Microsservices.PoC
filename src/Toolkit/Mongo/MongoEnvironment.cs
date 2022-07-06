@@ -10,9 +10,9 @@ public static class MongoEnvironment
         => _StringConnection;
     public static string DataBaseName
         => _DataBaseName;
-   
+
     public static IServiceCollection AddMongoDb(this IServiceCollection services,
-        string stringConnection, string databaseName)
+        string stringConnection = "MONGODB_URL", string databaseName = "MONGODB_DATABASE")
     {
         if (services == null)
             throw new ArgumentNullException("Services Collection not provided. Unable to start Mongo Environment.");
