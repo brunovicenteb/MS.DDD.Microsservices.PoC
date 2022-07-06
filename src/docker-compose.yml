@@ -1,0 +1,54 @@
+version: '3.4'
+
+services:
+  rabbitmq:
+    container_name: rabbit.mq
+    restart: always
+    image: rabbitmq:management
+    ports:
+      - "15672:15672"
+      - "5672:5672" 
+      
+  mongodb:
+    container_name: mongo.db  
+    restart: always
+    image: mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - ./mongodb_data:/data/db
+     
+  benefit.api:
+    restart: always  
+    container_name: benefit.api
+    image: ${DOCKER_REGISTRY-}benefitapi
+    ports:
+      - "8001:80"
+    build:
+      context: .
+      dockerfile: Benefit.API/Dockerfile
+    depends_on:
+      - rabbitmq
+      - mongodb
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - RABBIT_MQ=amqp://guest:guest@rabbitmq:5672
+      - MONGODB_URL=mongodb://mongodb:27017
+      - MONGODB_DATABASE=Benefit
+    volumes:
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+      
+  benefit.consumer.worker:
+    container_name: benefit.consumer.worker
+    image: ${DOCKER_REGISTRY-}benefitconsumerworker
+    build:
+      context: .
+      dockerfile: Benefit.Consumer.Worker/Dockerfile
+    depends_on:
+      - rabbitmq
+      - mongodb
+    environment:
+      - RABBIT_MQ=amqp://guest:guest@rabbitmq:5672
+      - MONGODB_URL=mongodb://mongodb:27017
+      - MONGODB_DATABASE=Benefit

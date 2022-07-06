@@ -1,11 +1,11 @@
-using Microsoft.AspNetCore.Builder;
+using Toolkit.Mongo;
 using Toolkit.MessageBroker;
 using Benefit.Service.Workers;
-using Toolkit.Mongo;
+using Microsoft.AspNetCore.Builder;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddMongoDb("BenefitMongoConnection", "BenefitMongoDb");
+builder.Services.AddMongoDb();
 builder.Services.AddConsumers<BenefitConsumerFactory>();
 
 var app = builder.Build();
