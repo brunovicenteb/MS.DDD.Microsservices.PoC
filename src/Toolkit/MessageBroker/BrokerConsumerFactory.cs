@@ -1,4 +1,5 @@
 ﻿using MassTransit;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Toolkit.MessageBroker;
 
@@ -12,10 +13,15 @@ public abstract class BrokerConsumerFactory
         where T : class, IConsumer
         => _Consumers.Add(typeof(T));
 
-    public void RegisterConsumers(IBusRegistrationConfigurator busRegistration)
+    public void RegisterConsumers(IServiceCollection serviceColllection, IBusRegistrationConfigurator busRegistration)
     {
         DeclareConsumers();
         foreach (var consumer in _Consumers)
             busRegistration.AddConsumer(consumer);
+        RegisterResources(serviceColllection, busRegistration);
+    }
+
+    protected virtual void RegisterResources(IServiceCollection serviceColllection, IBusRegistrationConfigurator busRegistration)
+    {
     }
 }

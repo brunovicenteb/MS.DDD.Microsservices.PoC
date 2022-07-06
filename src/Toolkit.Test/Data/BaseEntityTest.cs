@@ -11,7 +11,7 @@ public class BaseEntityTest
             base()
         {
         }
-        public NewBaseEntityTest(uint id) :
+        public NewBaseEntityTest(string id) :
             base(id)
         {
         }
@@ -19,12 +19,12 @@ public class BaseEntityTest
     #endregion
 
     [Theory]
-    [InlineData(0)]
-    [InlineData(25)]
-    [InlineData(43)]
-    public void CreatorTest(uint id)
+    [InlineData("0")]
+    [InlineData("25")]
+    [InlineData("43")]
+    public void CreatorTest(string id)
     {
-        var newBaseEntity = new NewBaseEntityTest();
+        var newBaseEntity = new NewBaseEntityTest(id);
         Assert.Equal(id, newBaseEntity.ID);
     }
 

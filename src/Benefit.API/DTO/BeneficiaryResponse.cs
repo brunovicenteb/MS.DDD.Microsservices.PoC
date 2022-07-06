@@ -3,8 +3,7 @@
 namespace Benefit.API.DTO;
 public class BeneficiaryResponse
 {
-    public uint ID { get; set; }
-    public uint? ParentID { get; set; }
+    public string ID { get; set; }
     public OperatorType Operator { get; set; }
     public string Name { get; set; }
     public string CPF { get; set; }

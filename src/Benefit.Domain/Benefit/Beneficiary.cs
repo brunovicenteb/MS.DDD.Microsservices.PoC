@@ -12,18 +12,16 @@ public class Beneficiary : TimeCycleEntity
     {
     }
 
-    public Beneficiary(uint id, uint? parentID, OperatorType operatorType, string name, string cpf, DateTime? birthDate,
+    public Beneficiary(string id, OperatorType operatorType, string name, string cpf, DateTime? birthDate,
         DateTime createAt, DateTime? updateAt, DateTime? deletedAt)
         : base(id, createAt, updateAt, deletedAt)
     {
-        ParentID = parentID;
         Operator = operatorType;
         Name = name;
         CPF = cpf;
         BirthDate = birthDate;
     }
 
-    public uint? ParentID { get; set; }
     public OperatorType Operator { get; set; }
     public string Name { get; set; }
     public string CPF { get; set; }
@@ -36,14 +34,6 @@ public class Beneficiary : TimeCycleEntity
             if (BirthDate == null)
                 return false;
             return BirthDate.Value.AddYears(18) > DateTime.Now;
-        }
-    }
-
-    public bool IsTitular
-    {
-        get
-        {
-            return !ParentID.HasValue;
         }
     }
 

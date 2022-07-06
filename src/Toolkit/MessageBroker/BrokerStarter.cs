@@ -6,32 +6,35 @@ namespace Toolkit.MessageBroker;
 
 public static class BrokerStarter
 {
-    public static IHostBuilder AddConsumers<T>(this IHostBuilder builder, string variableName = "RabbitMq")
+    public static IServiceCollection AddConsumers<T>(this IServiceCollection services, string variableName = "RabbitMq")
         where T : BrokerConsumerFactory, new()
     {
-        if (builder == null)
-            throw new ArgumentNullException("Builder not provided. Unable to start consumer target host.");
+        if (services == null)
+            throw new ArgumentNullException("Services Collection not provided. Unable to start consumer target host.");
         if (variableName.IsEmpty())
             throw new ArgumentNullException("Broker variable name not provided. Unable to start consumer target host.");
         string host = Environment.GetEnvironmentVariable(variableName);
         if (host.IsEmpty())
             throw new ArgumentNullException("Unable to identify consumer target host.");
-        return builder.ConfigureServices((context, collection) =>
+        services.AddMassTransit(busRegistration =>
+        {
+            var factory = new T();
+            factory.RegisterConsumers(services, busRegistration);
+            busRegistration.UsingRabbitMq((ctx, cfg) =>
             {
-                collection.AddMassTransit(busRegistration =>
-                {
-                    var factory = new T();
-                    factory.RegisterConsumers(busRegistration);
-                    busRegistration.UsingRabbitMq((ctx, cfg) =>
-                    {
-                        cfg.Host(host);
-                    });
-                });
+                cfg.Host(host);
+                cfg.ConfigureEndpoints(ctx);
             });
+        });
+        return services;
     }
 
-    public static void AddProducers(this IServiceCollection services, string variableName = "RabbitMq")
+    public static IServiceCollection AddProducers(this IServiceCollection services, string variableName = "RabbitMq")
     {
+        if (services == null)
+            throw new ArgumentNullException("Services Collection not provided. Unable to start consumer target host.");
+        if (variableName.IsEmpty())
+            throw new ArgumentNullException("Broker variable name not provided. Unable to start consumer target host.");
         string host = Environment.GetEnvironmentVariable(variableName);
         if (host.IsEmpty())
             throw new ArgumentNullException("Unable to identify consumer target host.");
@@ -41,7 +44,9 @@ public static class BrokerStarter
             {
                 cfg.Host(host);
                 cfg.UseMessageRetry(retry => { retry.Interval(3, TimeSpan.FromSeconds(5)); });
+                cfg.ConfigureEndpoints(ctx);
             });
         });
+        return services;
     }
 }

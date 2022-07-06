@@ -2,14 +2,20 @@ using MassTransit;
 using System.Diagnostics;
 using MassTransit.Metadata;
 using Benefit.Domain.Events;
-using Benefit.Domain.Benefit;
 using Benefit.Service.Operator;
-using System.Collections.Concurrent;
+using Benefit.Domain.Interfaces;
 
-namespace Benefit.Consumer.Worker.Workers;
+namespace Benefit.Service.Workers;
 
 public sealed class BenefitInsertedConsumer : IConsumer<BenefitInsertedEvent>
 {
+    public BenefitInsertedConsumer(IBenefitRepository benefitRepository)
+    {
+        _BenefitRepository = benefitRepository;
+    }
+
+    private readonly IBenefitRepository _BenefitRepository;
+
     public async Task Consume(ConsumeContext<BenefitInsertedEvent> context)
     {
         var timer = Stopwatch.StartNew();
@@ -23,7 +29,8 @@ public sealed class BenefitInsertedConsumer : IConsumer<BenefitInsertedEvent>
             await Console.Out.WriteAsync("BenefitInsertedEvent Called");
             var evt = context.Message;
             var op = OperatorServiceFactory.CreateOperator(evt.Operator);
-            op.CreateBeneficiary(evt.ParentID, evt.Name, evt.CPF, evt.BirthDate);
+            var beneficiary = op.CreateBeneficiary(evt.Name, evt.CPF, evt.BirthDate);
+            _BenefitRepository.Add(beneficiary);
         }
         catch (Exception ex)
         {
