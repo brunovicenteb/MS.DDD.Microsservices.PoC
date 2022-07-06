@@ -10,7 +10,7 @@ public abstract class BrokerConsumerFactory
     protected abstract void DeclareConsumers();
 
     protected void AddConsumer<T>()
-        where T : class, IConsumer
+        where T : class, IBrokerConsumer
         => _Consumers.Add(typeof(T));
 
     public void RegisterConsumers(IServiceCollection serviceColllection, IBusRegistrationConfigurator busRegistration)

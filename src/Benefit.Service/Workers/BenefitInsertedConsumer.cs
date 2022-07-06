@@ -1,40 +1,26 @@
-using MassTransit;
-using System.Diagnostics;
-using MassTransit.Metadata;
+using Toolkit.MessageBroker;
 using Benefit.Domain.Events;
-using Benefit.Domain.Interfaces;
+using Toolkit.Configurations;
 using Benefit.Domain.Operator;
+using Benefit.Domain.Interfaces;
 
 namespace Benefit.Service.Workers;
 
-public sealed class BenefitInsertedConsumer : IConsumer<BenefitInsertedEvent>
+public sealed class BenefitInsertedConsumer : BrokerChainedConsumer<BenefitInsertedEvent, BenefitCreatedEvent>
 {
-    public BenefitInsertedConsumer(IBenefitRepository benefitRepository)
+    public BenefitInsertedConsumer(IBenefitRepository benefitRepository, GenericMapper mapper)
+        : base(mapper)
     {
         _BenefitRepository = benefitRepository;
     }
 
     private readonly IBenefitRepository _BenefitRepository;
 
-    public async Task Consume(ConsumeContext<BenefitInsertedEvent> context)
+    protected override BrokerConsumerResult Consume(BenefitInsertedEvent eventData)
     {
-        var timer = Stopwatch.StartNew();
-        try
-        {
-            if (context == null || context.Message == null)
-            {
-                await Console.Out.WriteAsync("BenefitInsertedEvent Called with no Message.");
-                return;
-            }
-            await Console.Out.WriteAsync("BenefitInsertedEvent Called");
-            var evt = context.Message;
-            var op = Operator.CreateOperator(evt.Operator);
-            var beneficiary = op.CreateBeneficiary(evt.Name, evt.CPF, evt.BirthDate);
-            _BenefitRepository.Add(beneficiary);
-        }
-        catch (Exception ex)
-        {
-            await context.NotifyFaulted(timer.Elapsed, TypeMetadataCache<BenefitInsertedEvent>.ShortName, ex);
-        }
+        var op = Operator.CreateOperator(eventData.Operator);
+        var beneficiary = op.CreateBeneficiary(eventData.Name, eventData.CPF, eventData.BirthDate);
+        _BenefitRepository.Add(beneficiary);
+        return BrokerConsumerResult.Sucess;
     }
 }
