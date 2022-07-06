@@ -3,8 +3,8 @@ using System.Text;
 using Toolkit.Exceptions;
 using Benefit.Domain.Benefit;
 
-namespace Benefit.Service.Operator;
-public abstract class BaseOperatorService
+namespace Benefit.Domain.Operator;
+public abstract class BaseOperator
 {
     protected abstract OperatorType Type { get; }
     protected virtual bool IsRequiredCPF(Beneficiary beneficiary) => true;
