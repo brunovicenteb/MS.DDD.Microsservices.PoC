@@ -1,7 +1,7 @@
 ﻿using Benefit.Domain.Benefit;
 
-namespace Benefit.Service.Operator;
-public sealed class HapvidaOperator : BaseOperatorService
+namespace Benefit.Domain.Operator;
+public sealed class HapvidaOperator : BaseOperator
 {
     protected override OperatorType Type => OperatorType.Hapvida;
 }

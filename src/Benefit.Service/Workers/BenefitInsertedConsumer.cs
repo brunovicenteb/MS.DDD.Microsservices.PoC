@@ -2,8 +2,8 @@ using MassTransit;
 using System.Diagnostics;
 using MassTransit.Metadata;
 using Benefit.Domain.Events;
-using Benefit.Service.Operator;
 using Benefit.Domain.Interfaces;
+using Benefit.Domain.Operator;
 
 namespace Benefit.Service.Workers;
 
@@ -28,7 +28,7 @@ public sealed class BenefitInsertedConsumer : IConsumer<BenefitInsertedEvent>
             }
             await Console.Out.WriteAsync("BenefitInsertedEvent Called");
             var evt = context.Message;
-            var op = OperatorServiceFactory.CreateOperator(evt.Operator);
+            var op = Operator.CreateOperator(evt.Operator);
             var beneficiary = op.CreateBeneficiary(evt.Name, evt.CPF, evt.BirthDate);
             _BenefitRepository.Add(beneficiary);
         }
