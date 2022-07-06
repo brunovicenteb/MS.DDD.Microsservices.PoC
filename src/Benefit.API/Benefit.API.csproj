@@ -7,6 +7,8 @@
 	<PropertyGroup>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<NoWarn>$(NoWarn);1591</NoWarn>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+		<DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -22,7 +24,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Bank.Domain\Benefit.Domain.csproj" />
 		<ProjectReference Include="..\Benefit.Domain\Benefit.Domain.csproj" />
 		<ProjectReference Include="..\Benefit.Service\Benefit.Service.csproj" />
 		<ProjectReference Include="..\Toolkit\Toolkit.csproj" />

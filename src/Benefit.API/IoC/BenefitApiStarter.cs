@@ -28,7 +28,7 @@ public static class StartBenefitApi
             opt.IncludeXmlComments(xmlPath);
         });
         services.AddProducers();
-        services.AddMongoDb("BenefitMongoConnection", "BenefitMongoDb");
+        services.AddMongoDb();
         services.AddScoped<IBenefitRepository, BenefitRepository>();
         return services;
     }
