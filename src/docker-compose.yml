@@ -18,8 +18,8 @@ services:
     volumes:
       - ./mongodb_data:/data/db
 
-  Benefit.Consumer.Worker.Test:
-    container_name: Consumer.Worker.Mock
+  workermock:
+    container_name: Worker.Mock
     restart: always
     image: ${DOCKER_REGISTRY-}benefit-worker-mock
     ports:
@@ -58,6 +58,7 @@ services:
     depends_on:
       - rabbitmq
       - mongodb
+      - workermock
     environment:
       - RABBIT_MQ=amqp://guest:guest@rabbitmq:5672
       - MONGODB_URL=mongodb://mongodb:27017

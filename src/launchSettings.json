@@ -1,0 +1,15 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "benefit.api": "StartDebugging",
+        "benefit.consumer.worker": "StartDebugging",
+        "mongodb": "StartWithoutDebugging",
+        "rabbitmq": "StartWithoutDebugging",
+        "workermock": "StartWithoutDebugging"
+      }
+    }
+  }
+}
