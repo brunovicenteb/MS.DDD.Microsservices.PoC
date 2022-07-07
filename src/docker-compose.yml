@@ -23,7 +23,7 @@ services:
     restart: always
     image: ${DOCKER_REGISTRY-}benefit-worker-mock
     ports:
-      - "3000:3001"
+      - "3000:3000"
     build:
       context: .
       dockerfile: Benefit.Consumer.Worker.Test/Dockerfile
