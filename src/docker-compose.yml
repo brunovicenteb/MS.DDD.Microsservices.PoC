@@ -24,6 +24,8 @@ services:
     image: ${DOCKER_REGISTRY-}benefit-worker-mock
     ports:
       - "3000:3000"
+    volumes:
+      - ./Benefit.Consumer.Worker.Test/Mock:/opt
     build:
       context: .
       dockerfile: Benefit.Consumer.Worker.Test/Dockerfile

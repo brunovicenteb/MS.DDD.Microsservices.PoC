@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Benefit.Consumer.Worker.Test": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}
