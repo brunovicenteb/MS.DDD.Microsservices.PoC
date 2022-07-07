@@ -17,6 +17,16 @@ services:
       - 27017:27017
     volumes:
       - ./mongodb_data:/data/db
+
+  Benefit.Consumer.Worker.Test:
+    container_name: Consumer.Worker.Mock
+    restart: always
+    image: ${DOCKER_REGISTRY-}benefit-worker-mock
+    ports:
+      - "3000:3001"
+    build:
+      context: .
+      dockerfile: Benefit.Consumer.Worker.Test/Dockerfile
      
   benefit.api:
     restart: always  

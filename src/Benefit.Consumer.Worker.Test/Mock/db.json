@@ -1,0 +1,45 @@
+{
+  "movimentacoes-vidas": [
+    {
+      "carteira": "Administrado",
+      "codigoFamiliarBenef": "00000000",
+      "codigoMovimentacao": "25202",
+      "tipoMovimentacao": "INCLUSAO",
+      "dataGeracao": "2022-06-23T12:07:02.000-03:00",
+      "saude": {
+        "codigo": "012345",
+        "descricaoStatus": "Aguardando Processamento",
+        "codigoStatus": 2,
+        "numeroCI": "39800397000787220000",
+        "validation": {
+          "criticas": [
+            {
+              "fieldName": "Faltou preecher os dados do beneficiario Nome completo",
+              "message": "Nome completo vazio!",
+              "codigo": "Código do erro!"
+            }
+          ],
+          "nomeBeneficiario": "João carlos",
+          "msg": "sucesso"
+        }
+      },
+      "odonto": {
+        "codigo": "012345",
+        "descricaoStatus": "Aguardando Processamento",
+        "codigoStatus": 2,
+        "numeroCI": "39800397000787220000",
+        "validation": {
+          "criticas": [
+            {
+              "fieldName": "Faltou preecher os dados do beneficiario Nome completo",
+              "message": "Nome completo vazio!",
+              "codigo": "Código do erro!"
+            }
+          ],
+          "nomeBeneficiario": "João carlos",
+          "msg": "sucesso"
+        }
+      }
+    }
+  ]
+}

@@ -53,6 +53,8 @@ TestResults/
 ######################
 *.log
 *.sqlite
+src/mongodb_data/*
+######################
 # OS generated files #
 ######################
 .DS_Store?
