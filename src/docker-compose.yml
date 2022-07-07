@@ -18,8 +18,8 @@ services:
     volumes:
       - ./mongodb_data:/data/db
 
-  Benefit.Consumer.Worker.Test:
-    container_name: Consumer.Worker.Mock
+  benefit.consumer.worker.test:
+    container_name: consumer.worker.mock
     restart: always
     image: ${DOCKER_REGISTRY-}benefit-worker-mock
     ports:

@@ -16,10 +16,10 @@
             {
               "fieldName": "Faltou preecher os dados do beneficiario Nome completo",
               "message": "Nome completo vazio!",
-              "codigo": "CÛdigo do erro!"
+              "codigo": "C√≥digo do erro!"
             }
           ],
-          "nomeBeneficiario": "Jo„o carlos",
+          "nomeBeneficiario": "Jo√£o carlos",
           "msg": "sucesso"
         }
       },
@@ -33,10 +33,10 @@
             {
               "fieldName": "Faltou preecher os dados do beneficiario Nome completo",
               "message": "Nome completo vazio!",
-              "codigo": "CÛdigo do erro!"
+              "codigo": "C√≥digo do erro!"
             }
           ],
-          "nomeBeneficiario": "Jo„o carlos",
+          "nomeBeneficiario": "Jo√£o carlos",
           "msg": "sucesso"
         }
       }
