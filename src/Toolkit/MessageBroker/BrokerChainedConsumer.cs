@@ -1,6 +1,6 @@
 ﻿using MassTransit;
 using Toolkit.Interfaces;
-using Toolkit.Configurations;
+using Toolkit.Mapper;
 
 namespace Toolkit.MessageBroker;
 
@@ -14,10 +14,10 @@ public abstract class BrokerChainedConsumer<T, V> : BrokerConsumer<T>
         base.OnConsumed(context, previousResult);
         if (previousResult.ResultType != BrokerConsumerResultType.Sucess)
             return;
-        var mapper = new GenericMapper();
         var result = (BrokerConsumerSucess)previousResult;
         if (result.GeneratedArtifact == null)
             return;
+        var mapper = MapperFactory.Map<IIdentifiable, V>();
         V chainedMessage = mapper.Map<IIdentifiable, V>(result.GeneratedArtifact);
         context.Publish(chainedMessage);
     }
