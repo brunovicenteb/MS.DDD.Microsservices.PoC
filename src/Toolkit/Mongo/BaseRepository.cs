@@ -3,7 +3,7 @@ using Toolkit.Data;
 using MongoDB.Driver;
 using Toolkit.Interfaces;
 using MongoDB.Bson.Serialization;
-using Toolkit.Configurations;
+using Toolkit.Mapper;
 
 namespace Toolkit.Mongo
 {
@@ -47,7 +47,7 @@ namespace Toolkit.Mongo
             TEntity t = GetObjectByID(entity.ID);
             if (t == null)
                 return null;
-            var mapper = new GenericMapper();
+            var mapper = MapperFactory.Map<TEntity, TEntity>();
             t = mapper.Map<TEntity, TEntity>(entity);
             var updateResult = Objects.ReplaceOne(
                 o => o.ID == t.ID, replacement: entity);

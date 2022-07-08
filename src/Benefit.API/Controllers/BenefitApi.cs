@@ -1,11 +1,11 @@
-using AutoMapper;
 using MassTransit;
 using Toolkit.Web;
 using Benefit.API.DTO;
-using Benefit.Domain.Benefit;
-using Toolkit.Configurations;
+using Toolkit.Interfaces;
 using Benefit.Domain.Events;
+using Benefit.Domain.Benefit;
 using Benefit.Domain.Interfaces;
+using Toolkit.Mapper;
 
 namespace MS.DDD.Microsservices.PoC.Benefit.API.Controllers;
 
@@ -17,17 +17,13 @@ public class BenefitApi : ManagedController
     {
         _Bus = bus;
         _BenefitRepository = benefitRepository;
-        var cfg = new MapperConfiguration(cfg =>
-        {
-            cfg.CreateMap<Beneficiary, BeneficiaryResponse>();
-            cfg.CreateMap<Work, BeneficiaryWorkResponse>();
-            cfg.CreateMap<BeneficiaryCreateRequest, BenefitInsertedEvent>();
-        });
-        _Mapper = new GenericMapper(cfg);
+        _Mapper = MapperFactory.Nest<Beneficiary, BeneficiaryResponse>()
+            .Nest<Work, BeneficiaryWorkResponse>()
+            .Build<BeneficiaryCreateRequest, BenefitInsertedEvent>();
     }
 
     private readonly IBus _Bus;
-    private readonly GenericMapper _Mapper;
+    private readonly IGenericMapper _Mapper;
     private readonly IBenefitRepository _BenefitRepository;
 
     /// <summary>Returns the registered benefits with the possibility of pagination.</summary>
