@@ -1,10 +1,10 @@
 using Refit;
 using MassTransit;
+using Toolkit.Register;
 using Benefit.Service.Infra;
 using Benefit.Domain.Interfaces;
-using Benefit.Service.Interfaces;
+using Benefit.Service.APIs.Imdb;
 using Microsoft.Extensions.DependencyInjection;
-using Toolkit.Register;
 
 namespace Benefit.Service.Workers;
 

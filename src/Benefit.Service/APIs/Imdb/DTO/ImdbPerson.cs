@@ -1,4 +1,4 @@
-﻿namespace Benefit.Service.Model;
+﻿namespace Benefit.Service.APIs.Imdb.DTO;
 
 public class ImdbPerson
 {

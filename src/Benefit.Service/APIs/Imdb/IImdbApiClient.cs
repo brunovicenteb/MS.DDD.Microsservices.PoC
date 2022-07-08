@@ -1,7 +1,7 @@
 ﻿using Refit;
-using Benefit.Service.Model;
+using Benefit.Service.APIs.Imdb.DTO;
 
-namespace Benefit.Service.Interfaces;
+namespace Benefit.Service.APIs.Imdb;
 
 public interface IImdbApiClient
 {

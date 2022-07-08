@@ -1,8 +1,8 @@
 using Toolkit.MessageBroker;
 using Benefit.Domain.Events;
-using Benefit.Domain.Interfaces;
-using Benefit.Service.Interfaces;
 using Benefit.Domain.Benefit;
+using Benefit.Domain.Interfaces;
+using Benefit.Service.APIs.Imdb;
 
 namespace Benefit.Service.Workers;
 
