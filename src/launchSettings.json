@@ -8,7 +8,7 @@
         "benefit.consumer.worker": "StartDebugging",
         "mongodb": "StartWithoutDebugging",
         "rabbitmq": "StartWithoutDebugging",
-        "workermock": "StartWithoutDebugging"
+        "workermock": "StartDebugging"
       }
     }
   }
