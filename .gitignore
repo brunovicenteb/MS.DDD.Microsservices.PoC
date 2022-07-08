@@ -12,6 +12,7 @@
 *.dll.config
 *.cache
 *.suo
+*.override.yml
 # Include dlls if they’re in the NuGet packages directory
 !/packages/*/lib/*.dll
 # Include dlls if they're in the CommonReferences directory
@@ -68,6 +69,9 @@ Thumbs.db
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
+
+# Mongo Db Data
+[Mm]ongodb_data/
 
 # Build results
 [Dd]ebug/

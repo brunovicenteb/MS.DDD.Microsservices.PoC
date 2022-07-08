@@ -13,6 +13,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Benefit.Domain\Benefit.Domain.csproj" />
 		<ProjectReference Include="..\Toolkit\Toolkit.csproj" />
+		<PackageReference Include="Refit.HttpClientFactory" Version="6.3.2" />
 	</ItemGroup>
 
 </Project>

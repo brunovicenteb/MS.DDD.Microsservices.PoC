@@ -1,13 +1,14 @@
 ﻿using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Toolkit.Register;
 
 namespace Toolkit.MessageBroker;
 
 public static class BrokerStarter
 {
     public static IServiceCollection AddConsumers<T>(this IServiceCollection services, string variableName = "RABBIT_MQ")
-        where T : BrokerConsumerFactory, new()
+        where T : ResourcesFactory, new()
     {
         if (services == null)
             throw new ArgumentNullException("Services Collection not provided. Unable to start consumer target host.");

@@ -3,6 +3,7 @@ using Toolkit.Data;
 using MongoDB.Driver;
 using Toolkit.Interfaces;
 using MongoDB.Bson.Serialization;
+using Toolkit.Configurations;
 
 namespace Toolkit.Mongo
 {
@@ -28,8 +29,6 @@ namespace Toolkit.Mongo
         protected readonly IMongoCollection<TEntity> Objects;
         protected abstract string CollectionName { get; }
 
-        protected abstract void UpdateData(TEntity updated, TEntity original);
-
         public long Count()
         {
             return Objects.CountDocuments(FilterDefinition<TEntity>.Empty);
@@ -48,7 +47,8 @@ namespace Toolkit.Mongo
             TEntity t = GetObjectByID(entity.ID);
             if (t == null)
                 return null;
-            UpdateData(entity, t);
+            var mapper = new GenericMapper();
+            t = mapper.Map<TEntity, TEntity>(entity);
             var updateResult = Objects.ReplaceOne(
                 o => o.ID == t.ID, replacement: entity);
             if (updateResult.IsAcknowledged && updateResult.ModifiedCount > 0)

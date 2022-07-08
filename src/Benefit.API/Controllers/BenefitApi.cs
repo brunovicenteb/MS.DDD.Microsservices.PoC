@@ -1,3 +1,4 @@
+using AutoMapper;
 using MassTransit;
 using Toolkit.Web;
 using Benefit.API.DTO;
@@ -12,12 +13,19 @@ namespace MS.DDD.Microsservices.PoC.Benefit.API.Controllers;
 [Route("[controller]")]
 public class BenefitApi : ManagedController
 {
-    public BenefitApi(IBus bus, GenericMapper mapper, IBenefitRepository benefitRepository)
+    public BenefitApi(IBus bus, IBenefitRepository benefitRepository)
     {
         _Bus = bus;
-        _Mapper = mapper;
         _BenefitRepository = benefitRepository;
+        var cfg = new MapperConfiguration(cfg =>
+        {
+            cfg.CreateMap<Beneficiary, BeneficiaryResponse>();
+            cfg.CreateMap<Work, BeneficiaryWorkResponse>();
+            cfg.CreateMap<BeneficiaryCreateRequest, BenefitInsertedEvent>();
+        });
+        _Mapper = new GenericMapper(cfg);
     }
+
     private readonly IBus _Bus;
     private readonly GenericMapper _Mapper;
     private readonly IBenefitRepository _BenefitRepository;
