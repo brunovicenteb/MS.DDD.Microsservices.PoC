@@ -10,7 +10,7 @@ on:
 
 env:
   TESTS_PROJECT_PATH: ./src/Toolkit.Test
-  PROJECT_PATH: ./src/Toolkit.Test/Toolkit.csproj
+  PROJECT_PATH: ./src/Toolkit.Test/Toolkit.Test.csproj
 
 jobs:
   Build-Test:
