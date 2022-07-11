@@ -1,11 +1,16 @@
 name: Build-Tests-Toolkit
 
 on:
+  push:
+    branches: [ main, add-code-covering ]
+  pull_request:
+    branches: [ main ]
   workflow_dispatch:
    inputs:
       input:
         description: "Execute tests"
         required: false
+        default: "Execute tests manually"
 
 env:
   TESTS_PROJECT_PATH: ./src/Toolkit.Test
