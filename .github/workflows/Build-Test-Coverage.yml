@@ -26,10 +26,10 @@ jobs:
         dotnet-version: 6.0.x
         
     - name: Restore Dependencies
-      run: dotnet restore
+      run: dotnet restore ${{ env.PROJECT_PATH }}
       
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build ${{ env.PROJECT_PATH }} --no-restore
 
     - name: MSTest+Coverlet
       run: dotnet test ${{ env.PROJECT_PATH }} --logger:"html;LogFileName=resultado-testes.html" --collect:"XPlat Code Coverage"
