@@ -1,10 +1,6 @@
 name: Build-Tests-Toolkit
 
 on:
-  push:
-    branches: [ main, add-code-covering ]
-  pull_request:
-    branches: [ main ]
   workflow_dispatch:
    inputs:
       input:
