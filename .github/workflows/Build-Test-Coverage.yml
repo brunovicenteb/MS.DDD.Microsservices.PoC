@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ main ]
   workflow_dispatch:
+   inputs:
+      input:
+        description: "Execute tests"
+        required: false
 
 env:
   TESTS_PROJECT_PATH: ./src/Toolkit.Test
