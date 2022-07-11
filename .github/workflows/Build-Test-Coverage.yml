@@ -33,7 +33,7 @@ jobs:
       run: dotnet build ${{ env.PROJECT_PATH }} --no-restore
 
     - name: MSTest+Coverlet
-      run: dotnet test ${{ env.PROJECT_PATH }} --logger:"html;LogFileName=resultado-testes.html" --collect:"XPlat Code Coverage"
+      run: dotnet test ${{ env.TESTS_PROJECT_PATH }} --logger:"html;LogFileName=resultado-testes.html" --collect:"XPlat Code Coverage"
 
     - name: Install ReportGenerator
       if: always()
