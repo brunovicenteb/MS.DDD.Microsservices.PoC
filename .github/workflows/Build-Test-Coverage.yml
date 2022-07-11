@@ -6,7 +6,6 @@ on:
   pull_request:
     branches: [ main ]
   workflow_dispatch:
-    branches: [ main, add-code-covering ]
 
 env:
   TESTS_PROJECT_PATH: ./src/Toolkit.Test
