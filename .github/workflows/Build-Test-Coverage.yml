@@ -44,7 +44,7 @@ jobs:
       run: |
         cd ${{ env.TESTS_PROJECT_PATH }}/TestResults
         cd $(ls -d */|head -n 1)
-        reportgenerator "-reports:coverage.output.xml" "-targetdir:coveragereport" -reporttypes:Html 
+        reportgenerator "-reports:coverage.cobertura.xml" "-targetdir:coveragereport" -reporttypes:Html 
 
     - name: Upload UnitTest and Cover Reports as Artifacts
       uses: actions/upload-artifact@v2.2.2
