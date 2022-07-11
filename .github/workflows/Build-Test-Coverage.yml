@@ -2,7 +2,7 @@ name: Build-Tests-Toolkit
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, add-code-covering ]
   pull_request:
     branches: [ main ]
   workflow_dispatch:
