@@ -6,10 +6,11 @@ on:
   pull_request:
     branches: [ main ]
   workflow_dispatch:
+    branches: [ main, add-code-covering ]
 
 env:
-  TESTS_PROJECT_PATH: ./Toolkit.Test
-  PROJECT_PATH: ./Toolkit.Test/Toolkit.csproj
+  TESTS_PROJECT_PATH: ./src/Toolkit.Test
+  PROJECT_PATH: ./src/Toolkit.Test/Toolkit.csproj
 
 jobs:
   Build-Test:
@@ -20,7 +21,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Setup .NET 5
+    - name: Setup .NET 6
       uses: actions/setup-dotnet@v2
       with:
         dotnet-version: 6.0.x
