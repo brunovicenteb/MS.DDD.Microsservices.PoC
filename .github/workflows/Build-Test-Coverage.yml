@@ -13,8 +13,9 @@ on:
         default: "Execute tests manually"
 
 env:
-  TESTS_PROJECT_PATH: ./src/Toolkit.Test
+  #TESTS_PROJECT_PATH: ./src/Toolkit.Test
   #PROJECT_PATH: ./src/Toolkit.Test/Toolkit.Test.csproj
+  TESTS_RESULTS_PATH: ./src
   PROJECT_PATH: ./src/Microsservices.PoC.sln
 
 jobs:
@@ -47,16 +48,16 @@ jobs:
     - name: Generate cover tests reports with ReportGenerator
       if: success()
       run: |
-        cd ${{ env.PROJECT_PATH }}/TestResults
+        cd ${{ env.TESTS_RESULTS_PATH }}/TestResults
         cd $(ls -d */|head -n 1)
         reportgenerator "-reports:coverage.cobertura.xml" "-targetdir:coveragereport" -reporttypes:Html 
 
     - name: Upload UnitTest and Cover Reports as Artifacts
       uses: actions/upload-artifact@v2.2.2
       env:
-        PROJECT_PATH: ${{ env.PROJECT_PATH }}/TestResults/
+        PROJECT_PATH: ${{ env.TESTS_RESULTS_PATH }}/TestResults/
       if: always()
       with:
         name: resultado-testes
-        path: ${{ env.PROJECT_PATH }}
+        path: ${{ env.TESTS_RESULTS_PATH }}
         retention-days: 30
