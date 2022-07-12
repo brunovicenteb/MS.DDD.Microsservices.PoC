@@ -1,11 +1,17 @@
 using Serilog;
 using Benefit.API.IoC;
+using Benefit.Service.IoC;
+using Toolkit.TransactionalOutBox;
 
 var builder = WebApplication.CreateBuilder(args);
 
-Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration)
-    .CreateLogger();
+builder.UseTransactionalOutBox<BenefitContext>()
+    .UseSerilog()
+    .DoNotOpenTelemetry()
+    .UseSqlServer(true)
+    .UseRabbitMq();
+
+builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.ConfigBenefitApi();
 

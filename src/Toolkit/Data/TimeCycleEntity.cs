@@ -11,7 +11,7 @@ public abstract class TimeCycleEntity : BaseEntity, ITimeCycle
         CreateAt = DateTime.UtcNow;
     }
 
-    public TimeCycleEntity(string id, DateTime createAt, DateTime? updateAt, DateTime? deletedAt)
+    public TimeCycleEntity(int id, DateTime createAt, DateTime? updateAt, DateTime? deletedAt)
         : base(id)
     {
         CreateAt = createAt;

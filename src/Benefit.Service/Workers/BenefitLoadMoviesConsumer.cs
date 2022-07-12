@@ -23,8 +23,8 @@ public sealed class BenefitLoadMoviesConsumer : BrokerConsumer<BenefitCreatedEve
         var imdbPerson = _ApiClient.GetPerson(BenefitConsumerFactory.ImdbKey, benefit.Name).Result;
         if (imdbPerson == null || imdbPerson.results == null || imdbPerson.results.Count == 0)
             return Sucess();
-        benefit.Works = imdbPerson.results
-            .Select(o => new Work(o.title, o.image, o.description)).ToArray();
+        //benefit.Works = imdbPerson.results
+        //    .Select(o => new Work(o.title, o.image, o.description)).ToArray();
         _BenefitRepository.Update(benefit);
         return Sucess();
     }

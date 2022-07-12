@@ -8,11 +8,11 @@ public abstract class BaseEntity : IIdentifiable
     public BaseEntity()
     {
     }
-    public BaseEntity(string id)
+    public BaseEntity(int id)
     {
         ID = id;
     }
-    public string ID { get; set; }
+    public int ID { get; set; }
 
     public virtual IValidator[] GetValidators()
         => new IValidator[] { };

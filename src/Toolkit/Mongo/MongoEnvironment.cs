@@ -2,7 +2,7 @@
 
 namespace Toolkit.Mongo;
 
-public static class MongoEnvironment
+public static class TransactionalOutboxEnvironment
 {
     private static string _StringConnection;
     private static string _DataBaseName;

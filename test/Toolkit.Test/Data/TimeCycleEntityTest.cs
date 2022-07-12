@@ -12,7 +12,7 @@ public class TimeCycleEntityTest
             base()
         {
         }
-        public NewTimeCycleEntityTest(string id, DateTime createAt, DateTime? updateAt, DateTime? deleteAd)
+        public NewTimeCycleEntityTest(int id, DateTime createAt, DateTime? updateAt, DateTime? deleteAd)
             : base(id, createAt, updateAt, deleteAd)
         {
         }
@@ -23,7 +23,7 @@ public class TimeCycleEntityTest
     public void NewTimeCycleEntityTest_CreateWithoutParamsTest()
     {
         var newBaseEntity = new NewTimeCycleEntityTest();
-        Assert.Equal(null as string, newBaseEntity.ID);
+        Assert.Equal(0, newBaseEntity.ID);
         Assert.Equal(DateTime.UtcNow.Year, newBaseEntity.CreateAt.Year);
         Assert.Equal(DateTime.UtcNow.Month, newBaseEntity.CreateAt.Month);
         Assert.Equal(DateTime.UtcNow.Day, newBaseEntity.CreateAt.Day);
@@ -33,8 +33,8 @@ public class TimeCycleEntityTest
     public void NewTimeCycleEntityTest_CreateWithParamsTest()
     {
         DateTime now = DateTime.Now;
-        var newTimeCycleEntity = new NewTimeCycleEntityTest("25", now, null, null);
-        Assert.Equal("25", newTimeCycleEntity.ID);
+        var newTimeCycleEntity = new NewTimeCycleEntityTest(25, now, null, null);
+        Assert.Equal(25, newTimeCycleEntity.ID);
         Assert.Equal(now, newTimeCycleEntity.CreateAt);
         Assert.False(newTimeCycleEntity.UpdateAt.HasValue);
         Assert.False(newTimeCycleEntity.DeletedAt.HasValue);
@@ -44,10 +44,10 @@ public class TimeCycleEntityTest
     public void NewTimeCycleEntityTest_IsActive()
     {
         DateTime now = DateTime.Now;
-        var entity = new NewTimeCycleEntityTest("25", now, null, null);
+        var entity = new NewTimeCycleEntityTest(25, now, null, null);
         Assert.True(entity.IsActive);
 
-        entity = new NewTimeCycleEntityTest("25", now, null, DateTime.UtcNow);
+        entity = new NewTimeCycleEntityTest(25, now, null, DateTime.UtcNow);
         Assert.False(entity.IsActive);
     }
 
@@ -55,7 +55,7 @@ public class TimeCycleEntityTest
     public void NewTimeCycleEntityTest_Delete()
     {
         DateTime now = DateTime.Now;
-        var entity = new NewTimeCycleEntityTest("25", now, null, null);
+        var entity = new NewTimeCycleEntityTest(25, now, null, null);
         Assert.True(entity.IsActive);
         Assert.True(entity.Delete());
         Assert.False(entity.IsActive);
@@ -65,11 +65,11 @@ public class TimeCycleEntityTest
     public void NewTimeCycleEntityTest_DeleteAlreadyDeleted()
     {
         DateTime now = DateTime.Now;
-        var entity = new NewTimeCycleEntityTest("25", now, null, DateTime.UtcNow);
+        var entity = new NewTimeCycleEntityTest(25, now, null, DateTime.UtcNow);
         var exception = Assert.Throws<DomainRuleException>(() => entity.Delete());
         Assert.Equal("Entity already deleted.", exception.Message);
 
-        entity = new NewTimeCycleEntityTest("25", now, null, null);
+        entity = new NewTimeCycleEntityTest(25, now, null, null);
         entity.Delete();
         exception = Assert.Throws<DomainRuleException>(() => entity.Delete());
         Assert.Equal("Entity already deleted.", exception.Message);
@@ -78,7 +78,7 @@ public class TimeCycleEntityTest
     [Fact]
     public void NewTimeCycleEntityTest_Update()
     {
-        var entity = new NewTimeCycleEntityTest("25", DateTime.UtcNow, null, null);
+        var entity = new NewTimeCycleEntityTest(25, DateTime.UtcNow, null, null);
         Assert.False(entity.UpdateAt.HasValue);
 
         entity.Update();

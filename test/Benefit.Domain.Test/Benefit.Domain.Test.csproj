@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -20,7 +22,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Toolkit\Toolkit.csproj" />
+    <ProjectReference Include="..\..\src\Benefit.Domain\Benefit.Domain.csproj" />
+    <ProjectReference Include="..\Toolkit.Test\Toolkit.Test.csproj" />
   </ItemGroup>
 
 </Project>

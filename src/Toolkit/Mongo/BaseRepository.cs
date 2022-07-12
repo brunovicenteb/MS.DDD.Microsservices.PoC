@@ -21,8 +21,8 @@ namespace Toolkit.Mongo
 
         public BaseRepository()
         {
-            var client = new MongoClient(MongoEnvironment.StringConnection);
-            var database = client.GetDatabase(MongoEnvironment.DataBaseName);
+            var client = new MongoClient(TransactionalOutboxEnvironment.StringConnection);
+            var database = client.GetDatabase(TransactionalOutboxEnvironment.DataBaseName);
             Objects = database.GetCollection<TEntity>(CollectionName);
         }
 
@@ -36,8 +36,6 @@ namespace Toolkit.Mongo
 
         public TEntity Add(TEntity entity)
         {
-            if (entity.ID.IsEmpty())
-                entity.ID = ObjectId.GenerateNewId().ToString();
             Objects.InsertOne(entity);
             return GetObjectByID(entity.ID);
         }
@@ -56,13 +54,13 @@ namespace Toolkit.Mongo
             return null;
         }
 
-        public bool Delete(string id)
+        public bool Delete(int id)
         {
             var deleteResult = Objects.DeleteOne(o => o.ID == id);
             return deleteResult.IsAcknowledged && deleteResult.DeletedCount > 0;
         }
 
-        public TEntity GetObjectByID(string id)
+        public TEntity GetObjectByID(int id)
         {
             var builder = Builders<TEntity>.Filter;
             var filter = builder.Eq("ID", id);

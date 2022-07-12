@@ -7,7 +7,7 @@ public interface IBaseRepository<TEntity> where TEntity : BaseEntity
     long Count();
     TEntity Add(TEntity entity);
     TEntity Update(TEntity entity);
-    bool Delete(string id);
-    TEntity GetObjectByID(string id);
+    bool Delete(int id);
+    TEntity GetObjectByID(int id);
     IEnumerable<TEntity> Get(int limit, int start);
 }
