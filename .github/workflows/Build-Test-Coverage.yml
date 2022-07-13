@@ -1,4 +1,4 @@
-name: Build-Tests-Toolkit
+name: Build-Tests
 
 on:
   push:
@@ -13,8 +13,8 @@ on:
         default: "Execute tests manually"
 
 env:
-  TESTS_PROJECT_PATH: ./src/Toolkit.Test
-  PROJECT_PATH: ./src/Toolkit.Test/Toolkit.Test.csproj
+  TESTS_PROJECT_PATH: ./src/Benefit.Test
+  PROJECT_PATH: ./src/Benefit.Test/Benefit.Test.csproj
 
 jobs:
   Build-Test:
