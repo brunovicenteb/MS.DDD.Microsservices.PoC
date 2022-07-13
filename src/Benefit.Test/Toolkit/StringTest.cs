@@ -6,63 +6,69 @@ namespace Benefit.Test.Toolkit
     public class StringTest
     {
         [Theory]
-        [InlineData("Has value!")]
-        [InlineData("")]
-        [InlineData(" ")]
-        [InlineData("Also has value!")]
-        public void TestEmptyValueFunction(string valueForTest)
+        [InlineData("Has value!", false)]
+        [InlineData("", true)]
+        [InlineData(" ", false)]
+        [InlineData("Also has value!", false)]
+        [InlineData(null, true)]
+        public void TestIsEmptyValueFunction(string valueForTest, bool expectedValue)
         {
             //arrange
 
             //act
-            var result = Strings.IsEmpty(valueForTest);
+            var result = valueForTest.IsEmpty();
 
             //assert
             Assert.IsType<bool>(result);
+            Assert.Equal(expectedValue, result);
 
             if (result)
-                Assert.Empty(valueForTest);
+                Assert.True(String.IsNullOrEmpty(valueForTest));
             else
                 Assert.NotEmpty(valueForTest);
         }
 
         [Theory]
-        [InlineData("Has value!")]
-        [InlineData("")]
-        [InlineData(" ")]
-        [InlineData("Also has value!")]
-        public void TestFilledValueFunction(string valueForTest)
+        [InlineData("Has value!", true)]
+        [InlineData("", false)]
+        [InlineData(" ", true)]
+        [InlineData("Also has value!", true)]
+        [InlineData(null, false)]
+        public void TestIsFilledValueFunction(string valueForTest, bool expectedValue)
         {
             //arrange
 
             //act
-            var result = Strings.IsFilled(valueForTest);
+            var result = valueForTest.IsFilled();
 
             //assert
             Assert.IsType<bool>(result);
+            Assert.Equal(expectedValue, result);
 
             if (result)
                 Assert.NotEmpty(valueForTest);
             else
-                Assert.Empty(valueForTest);
+                Assert.True(String.IsNullOrEmpty(valueForTest));
         }
 
         [Theory]
-        [InlineData("is lower!")]
-        [InlineData("IS UPPER")]
-        [InlineData("iT's bOth")]
-        [InlineData(null)]
-        public void TestSafeToLowerFunction(string valueForTest)
+        [InlineData("is lower!", "is lower!")]
+        [InlineData("IS UPPER", "is upper")]
+        [InlineData("iT's bOth", "it's both")]
+        [InlineData("", "")]
+        [InlineData(null, "")]
+        public void TestSafeToLowerFunction(string valueForTest, string expectedValue)
         {
             //arrange
 
             //act
-            var result = Strings.SafeToLower(valueForTest);
+            var result = valueForTest.SafeToLower();
             var resultOnlyLetters = new String(result.Where(c => Char.IsLetter(c)).ToArray());
 
             //assert
             Assert.IsType<string>(result);
             Assert.True(resultOnlyLetters.All(char.IsLower));
+            Assert.Equal(expectedValue, result);
         }
 
         [Theory]
@@ -75,7 +81,7 @@ namespace Benefit.Test.Toolkit
             //arrange
 
             //act
-            var validDocument = Strings.IsValidCPF(valueForTest);
+            var validDocument = valueForTest.IsValidCPF();
 
             //assert
             Assert.IsType<bool>(validDocument);
@@ -87,12 +93,13 @@ namespace Benefit.Test.Toolkit
         [InlineData("190.564.540-21")]
         [InlineData("557.851.180-94")]
         [InlineData("")]
+        [InlineData(null)]
         public void TestInvalidCpf(string valueForTest)
         {
             //arrange
 
             //act
-            var validDocument = Strings.IsValidCPF(valueForTest);
+            var validDocument = valueForTest.IsValidCPF();
 
             //assert
             Assert.IsType<bool>(validDocument);
