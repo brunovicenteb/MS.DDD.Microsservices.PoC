@@ -7,7 +7,7 @@ namespace Toolkit.MessageBroker;
 
 public abstract class BrokerConsumer<T> : IBrokerConsumer<T> where T : class
 {
-    protected abstract BrokerConsumerResult Consume(T message);
+    protected abstract Task<BrokerConsumerResult> ConsumeAsync(T message);
 
     protected virtual void OnConsumed(ConsumeContext<T> context, BrokerConsumerResult previousResult)
     {
@@ -29,7 +29,7 @@ public abstract class BrokerConsumer<T> : IBrokerConsumer<T> where T : class
                 await Console.Out.WriteAsync($"{consumerName} called without message.");
                 return;
             }
-            var result = Consume(context.Message);
+            var result = await ConsumeAsync(context.Message);
             if (result.ResultType != BrokerConsumerResultType.Sucess)
                 return;
             await Console.Out.WriteAsync($"{consumerName} successfully completed.");

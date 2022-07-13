@@ -2,11 +2,12 @@ using MassTransit;
 using Toolkit.Web;
 using Benefit.API.DTO;
 using Toolkit.Interfaces;
-using Benefit.Domain.Events;
 using Benefit.Domain.Benefit;
 using Benefit.Domain.Interfaces;
 using Toolkit.Mapper;
 using Benefit.Domain.Operator;
+using Benefit.Domain.AggregatesModel.Benefit;
+using Benefit.Service.Interfaces;
 
 namespace MS.DDD.Microsservices.PoC.Benefit.API.Controllers;
 
@@ -14,18 +15,17 @@ namespace MS.DDD.Microsservices.PoC.Benefit.API.Controllers;
 [Route("[controller]")]
 public class BenefitApi : ManagedController
 {
-    public BenefitApi(IPublishEndpoint publiser, IBenefitRepository benefitRepository)
+    public BenefitApi(IBeneficiaryService service, IBenefitRepository benefitRepository)
     {
-        _Publisher = publiser;
+        _Service = service;
         _BenefitRepository = benefitRepository;
         _Mapper = MapperFactory.Nest<Beneficiary, BeneficiaryResponse>()
-            .Nest<Beneficiary, BenefitCreatedEvent>()
-            .Nest<Work, BeneficiaryWorkResponse>()
-            .Build<BeneficiaryCreateRequest, BenefitInsertedEvent>();
+            .Nest<Beneficiary, BeneficiarySubmitted>()
+            .Build<Work, BeneficiaryWorkResponse>();
     }
 
     private readonly IGenericMapper _Mapper;
-    private readonly IPublishEndpoint _Publisher;
+    private readonly IBeneficiaryService _Service;
     private readonly IBenefitRepository _BenefitRepository;
 
     /// <summary>Returns the registered benefits with the possibility of pagination.</summary>
@@ -59,32 +59,25 @@ public class BenefitApi : ManagedController
     {
         Func<Task<object>> execute = async delegate
         {
-            await Task.CompletedTask;
-            var op = Operator.CreateOperator(beneficiary.Operator);
-            var entity = op.CreateBeneficiary(beneficiary.Name, beneficiary.CPF, beneficiary.BirthDate);
-            return _BenefitRepository.Add(entity);
+            return await _Service.SubmitBeneficiary(beneficiary.Operator, beneficiary.Name, beneficiary.CPF, beneficiary.BirthDate);
         };
         Func<object, IActionResult> action = delegate (object result)
         {
             Beneficiary b = result as Beneficiary;
-            BenefitCreatedEvent evt = _Mapper.Map<Beneficiary, BenefitCreatedEvent>(b);
-            _Publisher.Publish(evt);
-            return CreatedAtAction(nameof(GetBeneficiaryById).ToLower(), new { id = b.ID });
+            return CreatedAtAction(nameof(Get).ToLower(), new { id = b.ID });
         };
         return await TryExecute(action, execute);
     }
 
     private async Task<List<BeneficiaryResponse>> GetBeneficiaries(int? limit = 10, int? start = 0)
     {
-        await Task.CompletedTask;
-        return _BenefitRepository.Get(limit ?? 10, start ?? 0)
-            .Select(o => _Mapper.Map<Beneficiary, BeneficiaryResponse>(o)).ToList();
+        var resutlt = await _BenefitRepository.GetAsync(limit ?? 10, start ?? 0);
+        return resutlt.Select(o => _Mapper.Map<Beneficiary, BeneficiaryResponse>(o)).ToList();
     }
 
     private async Task<BeneficiaryResponse> GetBeneficiaryById(int id)
     {
-        await Task.CompletedTask;
-        var beneficiary = _BenefitRepository.GetObjectByID(id);
+        var beneficiary = await _BenefitRepository.GetObjectByIDAsync(id);
         return _Mapper.Map<Beneficiary, BeneficiaryResponse>(beneficiary);
     }
 }

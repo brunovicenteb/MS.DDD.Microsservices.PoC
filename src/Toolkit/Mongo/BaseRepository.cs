@@ -29,49 +29,49 @@ namespace Toolkit.Mongo
         protected readonly IMongoCollection<TEntity> Objects;
         protected abstract string CollectionName { get; }
 
-        public long Count()
+        public async Task<long> CountAsync()
         {
-            return Objects.CountDocuments(FilterDefinition<TEntity>.Empty);
+            return await Objects.CountDocumentsAsync(FilterDefinition<TEntity>.Empty);
         }
 
-        public TEntity Add(TEntity entity)
+        public async Task<TEntity> AddAsync(TEntity entity)
         {
-            Objects.InsertOne(entity);
-            return GetObjectByID(entity.ID);
+            await Objects.InsertOneAsync(entity);
+            return await GetObjectByIDAsync(entity.ID);
         }
-
-        public TEntity Update(TEntity entity)
+            
+        public async Task<TEntity> UpdateAsync(TEntity entity)
         {
-            TEntity t = GetObjectByID(entity.ID);
+            TEntity t = await GetObjectByIDAsync(entity.ID);
             if (t == null)
                 return null;
             var mapper = MapperFactory.Map<TEntity, TEntity>();
             t = mapper.Map<TEntity, TEntity>(entity);
-            var updateResult = Objects.ReplaceOne(
+            var updateResult = await Objects.ReplaceOneAsync(
                 o => o.ID == t.ID, replacement: entity);
             if (updateResult.IsAcknowledged && updateResult.ModifiedCount > 0)
-                return GetObjectByID(entity.ID);
+                return await GetObjectByIDAsync(entity.ID);
             return null;
         }
 
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
-            var deleteResult = Objects.DeleteOne(o => o.ID == id);
+            var deleteResult = await Objects.DeleteOneAsync(o => o.ID == id);
             return deleteResult.IsAcknowledged && deleteResult.DeletedCount > 0;
         }
 
-        public TEntity GetObjectByID(int id)
+        public async Task<TEntity> GetObjectByIDAsync(int id)
         {
             var builder = Builders<TEntity>.Filter;
             var filter = builder.Eq("ID", id);
-            return Objects.Find(filter).FirstOrDefault();
+            return await Objects.Find(filter).FirstOrDefaultAsync();
         }
 
-        public IEnumerable<TEntity> Get(int limit, int start)
+        public async Task<IEnumerable<TEntity>> GetAsync(int limit, int start)
         {
-            return Objects.Find(FilterDefinition<TEntity>.Empty)
+            return await Objects.Find(FilterDefinition<TEntity>.Empty)
                 .Skip(start)
-                .Limit(limit).ToList();
+                .Limit(limit).ToListAsync();
         }
     }
 }

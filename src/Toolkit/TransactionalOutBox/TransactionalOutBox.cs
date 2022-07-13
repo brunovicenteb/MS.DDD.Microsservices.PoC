@@ -38,19 +38,19 @@ internal class TransactionalOutBox<T> : ILogable, IOpenTelemetreable, IDatabasea
 
     public IBrokeable UsePostgres(bool recreateDatabase = true)
     {
-        _DbContext = typeof(T);
-        _Builder.Services.AddDbContext<T>(x =>
-        {
-            var connectionString = "Host=localhost;Database=chamadosDB;Port=5432;Username=postgres;Password=supersenha";
-            x.UseNpgsql(connectionString, options =>
-            {
-                options.MigrationsAssembly(Assembly.GetExecutingAssembly().GetName().Name);
-                options.MigrationsHistoryTable($"__{nameof(T)}");
-                options.EnableRetryOnFailure(5);
-                options.MinBatchSize(1);
-            });
-        });
-        _Builder.Services.AddHostedService(o => new RecreateDatabaseHostedService<T>(recreateDatabase, o));
+        //_DbContext = typeof(T);
+        //_Builder.Services.AddDbContext<T>(x =>
+        //{
+        //    var connectionString = "Host=localhost;Database=chamadosDB;Port=5432;Username=postgres;Password=supersenha";
+        //    x.UseNpgsql(connectionString, options =>
+        //    {
+        //        options.MigrationsAssembly(Assembly.GetExecutingAssembly().GetName().Name);
+        //        options.MigrationsHistoryTable($"__{nameof(T)}");
+        //        options.EnableRetryOnFailure(5);
+        //        options.MinBatchSize(1);
+        //    });
+        //});
+        //_Builder.Services.AddHostedService(o => new RecreateDatabaseHostedService<T>(recreateDatabase, o));
         return this;
     }
 

@@ -1,6 +1,8 @@
 using Serilog;
 using Benefit.API.IoC;
 using Benefit.Service.IoC;
+using Benefit.Service.Services;
+using Benefit.Service.Interfaces;
 using Toolkit.TransactionalOutBox;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +12,8 @@ builder.UseTransactionalOutBox<BenefitContext>()
     .DoNotOpenTelemetry()
     .UseSqlServer(true)
     .UseRabbitMq();
+
+builder.Services.AddScoped<IBeneficiaryService, BeneficiaryService>();
 
 builder.Services.AddEndpointsApiExplorer();
 

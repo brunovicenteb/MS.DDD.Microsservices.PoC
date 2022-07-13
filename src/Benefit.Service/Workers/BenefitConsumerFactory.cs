@@ -16,7 +16,6 @@ public sealed class BenefitConsumerFactory : ResourcesFactory
 
     protected override void DeclareConsumers()
     {
-        AddConsumer<BenefitInsertedConsumer>();
         AddConsumer<BenefitLoadMoviesConsumer>();
     }
 

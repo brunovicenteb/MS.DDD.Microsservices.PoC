@@ -27,7 +27,6 @@ public static class StartBenefitApi
         });
         //services.AddProducers<BenefitContext>(TransactionOutboxType.Postgres);
         services.AddScoped<IBenefitRepository, BenefitRepository>();
-        builder.Services.AddScoped<IRegistrationService, RegistrationService>();
         return services;
     }
 

@@ -13,49 +13,49 @@ public abstract class RelationalDbRepository<TContext, TEntity> : IBaseRepositor
         Context = context;
     }
 
-    protected readonly TContext Context;
+    public readonly TContext Context;
 
     protected abstract DbSet<TEntity> Collection { get; }
 
-    public long Count()
+    public async Task<long> CountAsync()
     {
-        return Collection.Count();
+        return await Collection.CountAsync();
     }
 
-    public bool Delete(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
-        TEntity entity = GetObjectByID(id);
+        TEntity entity = await GetObjectByIDAsync(id);
         Collection.Remove(entity);
-        return Context.SaveChanges() == 1;
+        return await Context.SaveChangesAsync() == 1;
     }
 
-    public TEntity GetObjectByID(int id)
+    public async Task<TEntity> GetObjectByIDAsync(int id)
     {
-        return Collection
+        return await Collection
             .AsNoTracking()
-            .FirstOrDefault(o => o.ID == id);
+            .FirstOrDefaultAsync(o => o.ID == id);
     }
 
-    public IEnumerable<TEntity> Get(int limit, int start)
+    public async Task<IEnumerable<TEntity>> GetAsync(int limit, int start)
     {
-        return Collection
+        return await Collection
             .Skip(limit)
             .Take(start)
             .AsNoTracking()
-            .ToList();
+            .ToListAsync();
     }
 
-    public TEntity Add(TEntity entity)
+    public async Task<TEntity> AddAsync(TEntity entity)
     {
-        Collection.Add(entity);
-        Context.SaveChanges();
-        return GetObjectByID(entity.ID);
+        await Collection.AddAsync(entity);
+        await Context.SaveChangesAsync();
+        return await GetObjectByIDAsync(entity.ID);
     }
 
-    public TEntity Update(TEntity entity)
+    public async Task<TEntity> UpdateAsync(TEntity entity)
     {
         Collection.Update(entity);
-        Context.SaveChanges();
-        return GetObjectByID(entity.ID);
+        await Context.SaveChangesAsync();
+        return await GetObjectByIDAsync(entity.ID);
     }
 }
