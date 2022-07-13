@@ -1,4 +1,4 @@
-name: Build-Tests-Toolkit
+name: Build-Tests
 
 on:
   push:
@@ -13,10 +13,8 @@ on:
         default: "Execute tests manually"
 
 env:
-  #TESTS_PROJECT_PATH: ./src/Toolkit.Test
-  #PROJECT_PATH: ./src/Toolkit.Test/Toolkit.Test.csproj
-  TESTS_RESULTS_PATH: ./src
-  PROJECT_PATH: ./src/Microsservices.PoC.sln
+  TESTS_PROJECT_PATH: ./src/Benefit.Test
+  PROJECT_PATH: ./src/Benefit.Test/Benefit.Test.csproj
 
 jobs:
   Build-Test:
@@ -39,7 +37,7 @@ jobs:
       run: dotnet build ${{ env.PROJECT_PATH }} --no-restore
 
     - name: MSTest+Coverlet
-      run: dotnet test ${{ env.PROJECT_PATH }} --logger:"html;LogFileName=resultado-testes.html" --collect:"XPlat Code Coverage"
+      run: dotnet test ${{ env.TESTS_PROJECT_PATH }} --logger:"html;LogFileName=resultado-testes.html" --collect:"XPlat Code Coverage"
 
     - name: Install ReportGenerator
       if: always()
@@ -48,16 +46,16 @@ jobs:
     - name: Generate cover tests reports with ReportGenerator
       if: success()
       run: |
-        cd ${{ env.TESTS_RESULTS_PATH }}/TestResults
+        cd ${{ env.TESTS_PROJECT_PATH }}/TestResults
         cd $(ls -d */|head -n 1)
         reportgenerator "-reports:coverage.cobertura.xml" "-targetdir:coveragereport" -reporttypes:Html 
 
     - name: Upload UnitTest and Cover Reports as Artifacts
       uses: actions/upload-artifact@v2.2.2
       env:
-        PROJECT_PATH: ${{ env.TESTS_RESULTS_PATH }}/TestResults/
+        TESTS_PROJECT_PATH: ${{ env.TESTS_PROJECT_PATH }}/TestResults/
       if: always()
       with:
         name: resultado-testes
-        path: ${{ env.TESTS_RESULTS_PATH }}
+        path: ${{ env.TESTS_PROJECT_PATH }}
         retention-days: 30
