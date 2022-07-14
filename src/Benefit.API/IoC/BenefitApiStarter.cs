@@ -1,10 +1,10 @@
 using System.Reflection;
-using Benefit.Domain.Interfaces;
 using Benefit.Service.Infra;
-using Benefit.Service.IoC;
 using Microsoft.OpenApi.Models;
+using Benefit.Service.Services;
+using Benefit.Domain.Interfaces;
+using Benefit.Service.Interfaces;
 using Newtonsoft.Json.Converters;
-using Toolkit.MessageBroker;
 
 namespace Benefit.API.IoC;
 
@@ -25,7 +25,7 @@ public static class StartBenefitApi
             xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             opt.IncludeXmlComments(xmlPath);
         });
-        //services.AddProducers<BenefitContext>(TransactionOutboxType.Postgres);
+        services.AddScoped<IBeneficiaryService, BeneficiaryService>();
         services.AddScoped<IBenefitRepository, BenefitRepository>();
         return services;
     }

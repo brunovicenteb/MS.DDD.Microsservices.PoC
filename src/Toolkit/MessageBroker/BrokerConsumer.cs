@@ -1,7 +1,7 @@
 ﻿using MassTransit;
+using Toolkit.Interfaces;
 using System.Diagnostics;
 using MassTransit.Metadata;
-using Toolkit.Interfaces;
 
 namespace Toolkit.MessageBroker;
 

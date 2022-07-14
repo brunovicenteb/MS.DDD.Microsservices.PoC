@@ -1,22 +1,22 @@
+using Serilog;
 using MassTransit;
 using MassTransit.RetryPolicies;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Serilog;
 
 namespace Toolkit.TransactionalOutBox;
 
-public class RecreateDatabaseHostedService<T> : IHostedService where T : DbContext
+public class RecreateDbHostedService<T> : IHostedService where T : DbContext
 {
     private readonly Serilog.ILogger _Logger;
     private readonly IServiceProvider _ScopeFactory;
     private readonly bool _ForceRecreate;
     private T _Context;
 
-    public RecreateDatabaseHostedService(bool forceRecreate, IServiceProvider scopeFactory)
+    public RecreateDbHostedService(bool forceRecreate, IServiceProvider scopeFactory)
     {
-        _Logger = Log.ForContext<RecreateDatabaseHostedService<T>>();
+        _Logger = Log.ForContext<RecreateDbHostedService<T>>();
         _ForceRecreate = forceRecreate;
         _ScopeFactory = scopeFactory;
     }

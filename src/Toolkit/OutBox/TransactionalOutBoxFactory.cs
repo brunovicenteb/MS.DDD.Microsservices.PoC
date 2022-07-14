@@ -1,8 +1,8 @@
-﻿using Toolkit.Interfaces;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Builder;
+using Toolkit.OutBox.Interfaces;
+using Toolkit.TransactionalOutBox;
 
-namespace Toolkit.TransactionalOutBox;
+namespace Toolkit.OutBox;
 
 public static class TransactionalOutBoxFactory
 {

@@ -1,8 +1,6 @@
-using Serilog;
 using Benefit.API.IoC;
 using Benefit.Service.IoC;
-using Benefit.Service.Services;
-using Benefit.Service.Interfaces;
+using Toolkit.OutBox;
 using Toolkit.TransactionalOutBox;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,10 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.UseTransactionalOutBox<BenefitContext>()
     .UseSerilog()
     .DoNotOpenTelemetry()
-    .UseSqlServer(true)
+    .UseDatabase(DatabaseType.SqlServer)
     .UseRabbitMq();
-
-builder.Services.AddScoped<IBeneficiaryService, BeneficiaryService>();
 
 builder.Services.AddEndpointsApiExplorer();
 
@@ -27,9 +23,5 @@ if (app.Environment.IsDevelopment())
 app.UseRouting();
 app.UseBenefitApi();
 app.MapControllers();
-
-Log.Logger.Information("#############################################################");
-Log.Logger.Information("###                    Running Configs                    ###");
-Log.Logger.Information("#############################################################");
 
 app.Run();

@@ -1,8 +1,8 @@
-﻿using Benefit.Domain.Benefit;
-using Benefit.Domain.Interfaces;
-using Benefit.Service.IoC;
-using Microsoft.EntityFrameworkCore;
+﻿using Benefit.Service.IoC;
 using Toolkit.RelationalDb;
+using Benefit.Domain.Benefit;
+using Benefit.Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Benefit.Service.Infra;
 

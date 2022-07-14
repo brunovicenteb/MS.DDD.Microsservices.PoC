@@ -1,4 +1,4 @@
-﻿namespace Toolkit.TransactionalOutBox;
+﻿namespace Toolkit.OutBox.Interfaces;
 
 public interface ILogable
 {

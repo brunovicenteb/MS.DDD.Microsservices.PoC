@@ -24,22 +24,24 @@ public class BeneficiaryService : IBeneficiaryService
     private readonly IPublishEndpoint _Publisher;
     private readonly IBenefitRepository _BenefitRepository;
     private readonly IGenericMapper _Mapper;
+    private static Guid? _CorrerID;
 
     public async Task<Beneficiary> SubmitBeneficiary(OperatorType operatorType, string name, string cpf, DateTime? birthDate)
     {
-        //Guid correrID = NewId.NextGuid();
+        if (!_CorrerID.HasValue)
+            _CorrerID = NewId.NextGuid();
         var op = Operator.CreateOperator(operatorType);
         var entity = op.CreateBeneficiary(name, cpf, birthDate);
         BenefitRepository repo = (BenefitRepository)_BenefitRepository;
         await repo.Context.AddAsync(entity);
 
         var evt = _Mapper.Map<Beneficiary, BeneficiarySubmitted>(entity);
-        evt.CorrelationId = NewId.NextGuid(); 
+        evt.CorrelationId = _CorrerID.Value;
         await _Publisher.Publish(evt);
+        await repo.Context.SaveChangesAsync();
 
         try
         {
-            await repo.Context.SaveChangesAsync();
         }
         catch (DbUpdateException exception)
         {

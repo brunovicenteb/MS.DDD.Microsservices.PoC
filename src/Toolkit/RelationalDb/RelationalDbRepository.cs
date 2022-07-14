@@ -14,7 +14,6 @@ public abstract class RelationalDbRepository<TContext, TEntity> : IBaseRepositor
     }
 
     public readonly TContext Context;
-
     protected abstract DbSet<TEntity> Collection { get; }
 
     public async Task<long> CountAsync()
