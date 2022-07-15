@@ -1,4 +1,5 @@
-﻿using Benefit.Service.IoC;
+﻿using Toolkit;
+using Benefit.Service.IoC;
 using Toolkit.RelationalDb;
 using Benefit.Domain.Benefit;
 using Benefit.Domain.Interfaces;
@@ -14,4 +15,15 @@ public sealed class BenefitRepository : RelationalDbRepository<BenefitContext, B
     }
 
     protected override DbSet<Beneficiary> Collection => Context.Beneficiaries;
+
+    public async Task<Beneficiary> GetByCPF(string cpf)
+    {
+        if (cpf.IsEmpty())
+            throw new ArgumentNullException($"Empty value received as argument CPF.");
+        if (!cpf.IsValidCPF())
+            throw new ArgumentNullException($"Invalid CPF value \"{cpf}\" received as argument.");
+        return await Collection
+            .AsNoTracking()
+            .FirstOrDefaultAsync(o => o.CPF == cpf);
+    }
 }

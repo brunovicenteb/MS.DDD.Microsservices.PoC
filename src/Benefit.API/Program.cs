@@ -1,14 +1,14 @@
+using Toolkit.OutBox;
 using Benefit.API.IoC;
 using Benefit.Service.IoC;
-using Toolkit.OutBox;
 using Toolkit.TransactionalOutBox;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.UseTransactionalOutBox<BenefitContext>()
+builder.BeginProducer<BenefitContext>(DatabaseType.Postgress)
     .UseSerilog()
     .DoNotOpenTelemetry()
-    .UseDatabase(DatabaseType.SqlServer)
+    .UseDatabase()
     .UseRabbitMq();
 
 builder.Services.AddEndpointsApiExplorer();

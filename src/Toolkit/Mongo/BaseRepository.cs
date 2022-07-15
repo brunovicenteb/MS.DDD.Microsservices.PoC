@@ -34,13 +34,13 @@ namespace Toolkit.Mongo
             return await Objects.CountDocumentsAsync(FilterDefinition<TEntity>.Empty);
         }
 
-        public async Task<TEntity> AddAsync(TEntity entity)
+        public async Task<TEntity> AddAsync(TEntity entity, bool applySave = true)
         {
             await Objects.InsertOneAsync(entity);
             return await GetObjectByIDAsync(entity.ID);
         }
             
-        public async Task<TEntity> UpdateAsync(TEntity entity)
+        public async Task<TEntity> UpdateAsync(TEntity entity, bool applySave = true)
         {
             TEntity t = await GetObjectByIDAsync(entity.ID);
             if (t == null)
@@ -54,7 +54,7 @@ namespace Toolkit.Mongo
             return null;
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(int id, bool applySave = true)
         {
             var deleteResult = await Objects.DeleteOneAsync(o => o.ID == id);
             return deleteResult.IsAcknowledged && deleteResult.DeletedCount > 0;

@@ -21,24 +21,12 @@ public abstract class BrokerConsumer<T> : IBrokerConsumer<T> where T : class
     public async Task Consume(ConsumeContext<T> context)
     {
         var timer = Stopwatch.StartNew();
-        try
-        {
-            string consumerName = GetType().Name;
-            if (context == null || context.Message == null)
-            {
-                await Console.Out.WriteAsync($"{consumerName} called without message.");
-                return;
-            }
-            var result = await ConsumeAsync(context.Message);
-            if (result.ResultType != BrokerConsumerResultType.Sucess)
-                return;
-            await Console.Out.WriteAsync($"{consumerName} successfully completed.");
-            await context.NotifyConsumed(timer.Elapsed, TypeMetadataCache<T>.ShortName);
-            OnConsumed(context, result);
-        }
-        catch (Exception ex)
-        {
-            await context.NotifyFaulted(timer.Elapsed, TypeMetadataCache<T>.ShortName, ex);
-        }
+        string consumerName = GetType().Name;
+        if (context == null || context.Message == null)
+            return;
+        var result = await ConsumeAsync(context.Message);
+        if (result.ResultType != BrokerConsumerResultType.Sucess)
+            return;
+        OnConsumed(context, result);
     }
 }

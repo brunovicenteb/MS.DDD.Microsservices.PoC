@@ -13,7 +13,6 @@ public class BeneficiaryStateDefinition : SagaDefinition<BeneficiaryState>
     {
         _Provider = provider;
     }
-
     protected override void ConfigureSaga(IReceiveEndpointConfigurator endpointConfigurator,
         ISagaConfigurator<BeneficiaryState> consumerConfigurator)
     {
@@ -27,7 +26,6 @@ public class BeneficiaryStateMap : SagaClassMap<BeneficiaryState>
     protected override void Configure(EntityTypeBuilder<BeneficiaryState> entity, ModelBuilder model)
     {
         entity.Property(x => x.CurrentState);
-        entity.Property(x => x.ID);
         entity.Property(x => x.Name);
         entity.Property(x => x.CPF);
     }
@@ -35,12 +33,8 @@ public class BeneficiaryStateMap : SagaClassMap<BeneficiaryState>
 
 public class BeneficiaryState : SagaStateMachineInstance
 {
-    // Esse é o ID da saga
     public Guid CorrelationId { get; set; }
-
-    // Estado atual da saga
     public string CurrentState { get; set; }
-    public int ID { get; set; }
     public string Name { get; set; }
     public string CPF { get; set; }
 }
@@ -48,7 +42,6 @@ public class BeneficiaryState : SagaStateMachineInstance
 public record IBeneficiaryState
 {
     public Guid CorrelationId { get; set; }
-    public int ID { get; set; }
     public string Name { get; set; }
     public string CPF { get; set; }
 }
@@ -57,11 +50,11 @@ public record BeneficiarySubmitted : IBeneficiaryState
 {
 }
 
-public record BeneficiaryImdbIntegrated : IBeneficiaryState
+public record BeneficiaryRegistered : IBeneficiaryState
 {
 }
 
-public record BeneficiaryAnotherIntegrated : IBeneficiaryState
+public record BeneficiaryImdbIntegred : IBeneficiaryState
 {
 }
 
@@ -69,16 +62,8 @@ public class BeneficiaryStateMachine : MassTransitStateMachine<BeneficiaryState>
 {
     public BeneficiaryStateMachine()
     {
-        // Aqui são feitos os bindis para o Masstransit saber de qual instância da SAGA esse evento pertence.
         Event(() => SubmitBeneficiary, x => x.CorrelateById(context => context.Message.CorrelationId));
-        //Event(() => ImdbIntegratedBeneficiary, x => x.CorrelateById(context => context.Message.CorrelationId));
-        //Event(() => ImdbIntegratedBeneficiary, x => x.CorrelateById(context => context.Message.CorrelationId));
-        //Event(() => AnotherIntegratedBeneficiary, x => x.CorrelateById(context => context.Message.CorrelationId));
-
-        // Define o início da SAGA.
         InstanceState(o => o.CurrentState);
-
-        // Define os comportamentos da SAGA.
         Initially(
             When(SubmitBeneficiary)
                     .Then(context =>
@@ -87,13 +72,14 @@ public class BeneficiaryStateMachine : MassTransitStateMachine<BeneficiaryState>
                         context.Saga.CPF = context.Message.CPF;
                     })
                     .TransitionTo(Submitted)
-                    .Publish(context => new BeneficiaryImdbIntegrated
+                    .Publish(context => new BeneficiaryRegistered
                     {
                         CorrelationId = context.Saga.CorrelationId,
-                        ID = context.Message.ID,
                         Name = context.Message.Name,
                         CPF = context.Message.CPF
                     }));
+
+        //.TransitionTo(ImdbIntegrated));
 
         //During(Submitted,
         //    When(ImdbIntegratedBeneficiary)
@@ -132,9 +118,9 @@ public class BeneficiaryStateMachine : MassTransitStateMachine<BeneficiaryState>
     }
 
     public State Submitted { get; private set; }
-    //public State ImdbIntegrated { get; private set; }
+    public State ImdbIntegrated { get; private set; }
     //public State AnotherIntegrated { get; private set; }
     public Event<BeneficiarySubmitted> SubmitBeneficiary { get; } = null!;
-    //public Event<BeneficiaryImdbIntegrated> ImdbIntegratedBeneficiary { get; } = null!;
+    public Event<BeneficiaryImdbIntegred> ImdbIntegratedBeneficiary { get; } = null!;
     //public Event<BeneficiaryAnotherIntegrated> AnotherIntegratedBeneficiary { get; } = null!;
 }

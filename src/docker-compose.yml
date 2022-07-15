@@ -6,36 +6,41 @@ services:
     restart: always
     image: rabbitmq:management
     ports:
-      - "15672:15672"
-      - "5672:5672"
-    networks:
-      - benefit-compose-network
-      
-  mongo:
-    container_name: mongo.db
-    restart: always
-    image: mongo
-    ports:
-      - 27017:27017
-    volumes:
-      - ./mongodb_data:/data/db
-    environment:
-      - MONGO_INITDB_DATABASE=Benefit
+      - "15673:15673"
+      - "5673:5673"
     networks:
       - benefit-compose-network
 
-  mongoexpress:
-    container_name: mongo.express
+  postgres:
+    container_name: postgres.db
     restart: always
-    image: mongo-express
+    image: postgres
     ports:
-      - 8081:8081
-    depends_on:
-      - mongo
+      - "5432:5432"
     environment:
-      - ME_CONFIG_MONGODB_URL=mongodb://mongo:27017/
+      - POSTGRES_USER=guest      
+      - POSTGRES_PASSWORD=guest
+      - POSTGRES_DB=Benefit
     networks:
       - benefit-compose-network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+  pgadmin:
+    container_name: postgres.admin
+    restart: always  
+    image: dpage/pgadmin4
+    ports:
+      - "8002:80"
+    depends_on:
+      - postgres
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=guest@guest.com
+      - PGADMIN_DEFAULT_PASSWORD=guest
+    networks:
+      - benefit-compose-network
+    volumes:
+      - postgres_admin_data:/root/.pgadmin
      
   benefit.api:
     restart: always  
@@ -47,34 +52,36 @@ services:
       context: .
       dockerfile: Benefit.API/Dockerfile
     depends_on:
-      - mongo
       - rabbit
+      - postgres
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - RABBIT_MQ=amqp://guest:guest@rabbit:5672
-      - MONGODB_URL=mongodb://mongo:27017/
-      - MONGODB_DATABASE=Benefit
+      - RABBIT_MQ=amqp://guest:guest@rabbit:5673
+      - DATABASE_CONNECTION=Host=postgres;Database=Benefit;Port=5432;Username=guest;Password=guest
     volumes:
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
     networks:
       - benefit-compose-network
       
-  benefit.consumer.worker:
-    container_name: benefit.consumer.worker
-    image: ${DOCKER_REGISTRY-}benefitconsumerworker
-    build:
-      context: .
-      dockerfile: Benefit.Consumer.Worker/Dockerfile
-    depends_on:
-      - mongo
-      - rabbit
-    environment:
-      - RABBIT_MQ=amqp://guest:guest@rabbit:5672
-      - MONGODB_URL=mongodb://mongo:27017/
-      - MONGODB_DATABASE=Benefit
-    networks:
-      - benefit-compose-network
+  #benefit.consumer.worker:
+  #  container_name: benefit.consumer.worker
+  #  image: ${DOCKER_REGISTRY-}benefitconsumerworker
+  #  build:
+  #    context: .
+  #    dockerfile: Benefit.Consumer.Worker/Dockerfile
+  #  depends_on:
+  #    - rabbit
+  #    - postgres
+  #  environment:
+  #    - RABBIT_MQ=amqp://guest:guest@rabbit:5673
+  #    - DATABASE_CONNECTION=Host=postgres;Database=Benefit;Port=5432;Username=guest;Password=guest
+  #  networks:
+  #    - benefit-compose-network
+
+volumes:
+  postgres_data:
+  postgres_admin_data:
 
 networks:
   benefit-compose-network:

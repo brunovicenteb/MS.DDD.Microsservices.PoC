@@ -5,11 +5,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Toolkit.TransactionalOutBox;
+namespace Toolkit.OutBox.Producer;
 
 public class RecreateDbHostedService<T> : IHostedService where T : DbContext
 {
-    private readonly Serilog.ILogger _Logger;
+    private readonly ILogger _Logger;
     private readonly IServiceProvider _ScopeFactory;
     private readonly bool _ForceRecreate;
     private T _Context;

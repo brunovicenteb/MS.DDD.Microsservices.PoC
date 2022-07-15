@@ -1,4 +1,4 @@
-﻿namespace Toolkit.OutBox.Interfaces;
+﻿namespace Toolkit.OutBox;
 
 public interface IBrokeable
 {

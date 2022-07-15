@@ -21,10 +21,12 @@ public abstract class RelationalDbRepository<TContext, TEntity> : IBaseRepositor
         return await Collection.CountAsync();
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    public async Task<bool> DeleteAsync(int id, bool applySave = true)
     {
         TEntity entity = await GetObjectByIDAsync(id);
         Collection.Remove(entity);
+        if (!applySave)
+            return true;
         return await Context.SaveChangesAsync() == 1;
     }
 
@@ -44,17 +46,19 @@ public abstract class RelationalDbRepository<TContext, TEntity> : IBaseRepositor
             .ToListAsync();
     }
 
-    public async Task<TEntity> AddAsync(TEntity entity)
+    public async Task<TEntity> AddAsync(TEntity entity, bool applySave = true)
     {
         await Collection.AddAsync(entity);
-        await Context.SaveChangesAsync();
+        if (applySave)
+            await Context.SaveChangesAsync();
         return await GetObjectByIDAsync(entity.ID);
     }
 
-    public async Task<TEntity> UpdateAsync(TEntity entity)
+    public async Task<TEntity> UpdateAsync(TEntity entity, bool applySave = true)
     {
         Collection.Update(entity);
-        await Context.SaveChangesAsync();
+        if (applySave)
+            await Context.SaveChangesAsync();
         return await GetObjectByIDAsync(entity.ID);
     }
 }
