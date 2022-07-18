@@ -23,7 +23,7 @@ public abstract class BaseOperator
 
     private void ValidateBeneficiary(StringBuilder erros, Beneficiary beneficiary)
     {
-        if (beneficiary.CPF.IsEmpty() && IsRequiredCPF(beneficiary))
-            erros.AppendLine("The field \"CPF\" cannot be empty.");
+        //if (beneficiary.CPF.IsEmpty() && IsRequiredCPF(beneficiary))
+        //    erros.AppendLine("The field \"CPF\" cannot be empty.");
     }
 }

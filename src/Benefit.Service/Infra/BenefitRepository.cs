@@ -16,6 +16,16 @@ public sealed class BenefitRepository : RelationalDbRepository<BenefitContext, B
 
     protected override DbSet<Beneficiary> Collection => Context.Beneficiaries;
 
+    public override async Task<IEnumerable<Beneficiary>> GetAsync(int limit, int start)
+    {
+        return await Collection
+            .OrderBy(o => o.CreateAt)
+            .Skip(start)
+            .Take(limit)
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
     public async Task<Beneficiary> GetByCPF(string cpf)
     {
         if (cpf.IsEmpty())

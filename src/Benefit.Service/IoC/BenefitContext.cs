@@ -2,15 +2,16 @@
 using MassTransit;
 using Benefit.Service.Infra;
 using Benefit.Domain.Benefit;
+using Benefit.Service.Workers;
 using Benefit.Service.APIs.Imdb;
 using Benefit.Domain.Interfaces;
 using Toolkit.TransactionalOutBox;
 using Microsoft.EntityFrameworkCore;
-using Benefit.Domain.AggregatesModel.Benefit;
+using Benefit.Service.Sagas.Beneficiary;
 using Microsoft.Extensions.DependencyInjection;
+using Benefit.Service.Sagas.Beneficiary.Contract;
 using MassTransit.EntityFrameworkCoreIntegration;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Benefit.Service.Workers;
 
 namespace Benefit.Service.IoC;
 
@@ -45,8 +46,9 @@ public class BenefitContext : OutBoxDbContext
         _ImdbKey = Environment.GetEnvironmentVariable(_ImdbKeyVariableName);
         services.AddRefitClient<IImdbApiClient>()
             .ConfigureHttpClient(c => c.BaseAddress = new Uri(_ImdbUrlApi));
-        busRegistration.AddConsumer<BenefitLoadMoviesConsumer>();
-        busRegistration.AddConsumer<BenefitSendMailConsumer>();
+        busRegistration.AddConsumer<BenefiteImdbConsumer>();
+        busRegistration.AddConsumer<BeneficiaryTheAudioDbConsumer>();
+        busRegistration.AddConsumer<BeneficiaryNotifyFinishConsumer>();
         busRegistration.AddSagaStateMachine<BeneficiaryStateMachine, BeneficiaryState, BeneficiaryStateDefinition>()
             .EntityFrameworkRepository(r =>
             {
@@ -63,14 +65,14 @@ public class BenefitContext : OutBoxDbContext
         base.DoModelCreating(modelBuilder);
         var registration = modelBuilder.Entity<Beneficiary>();
         registration.HasKey(e => e.ID);
-        registration.HasIndex(e => e.CPF)
-                .IsUnique();
+        //registration.HasIndex(e => e.CPF)
+        //        .IsUnique();
         registration.Property(e => e.Name)
                 .HasMaxLength(50)
                 .IsRequired();
-        registration.Property(e => e.CPF)
-                .HasMaxLength(11)
-                .IsRequired();
+        //registration.Property(e => e.CPF)
+        //        .HasMaxLength(11)
+        //        .IsRequired();
         registration.Property(e => e.CreateAt)
                 .IsRequired();
         if (DbType == DatabaseType.SqlServer)

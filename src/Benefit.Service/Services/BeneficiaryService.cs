@@ -1,14 +1,14 @@
 using MassTransit;
 using Toolkit.Mapper;
+using Toolkit.Exceptions;
 using Toolkit.Interfaces;
+using Benefit.Service.Infra;
 using Benefit.Domain.Benefit;
 using Benefit.Domain.Operator;
 using Benefit.Domain.Interfaces;
 using Benefit.Service.Interfaces;
-using Benefit.Domain.AggregatesModel.Benefit;
-using Benefit.Service.Infra;
 using Microsoft.EntityFrameworkCore;
-using Toolkit.Exceptions;
+using Benefit.Service.Sagas.Beneficiary.Contract;
 
 namespace Benefit.Service.Services;
 
@@ -29,7 +29,6 @@ public class BeneficiaryService : IBeneficiaryService
     {
         try
         {
-
             var op = Operator.CreateOperator(operatorType);
             var entity = op.CreateBeneficiary(name, cpf, birthDate);
             BenefitRepository repo = (BenefitRepository)_BenefitRepository;

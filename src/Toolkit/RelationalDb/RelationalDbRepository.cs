@@ -37,11 +37,12 @@ public abstract class RelationalDbRepository<TContext, TEntity> : IBaseRepositor
             .FirstOrDefaultAsync(o => o.ID == id);
     }
 
-    public async Task<IEnumerable<TEntity>> GetAsync(int limit, int start)
+    public virtual async Task<IEnumerable<TEntity>> GetAsync(int limit, int start)
     {
         return await Collection
             .Skip(limit)
             .Take(start)
+            .OrderBy(o => o.ID)
             .AsNoTracking()
             .ToListAsync();
     }

@@ -1,13 +1,12 @@
 using MassTransit;
 using Toolkit.Web;
+using Toolkit.Mapper;
 using Benefit.API.DTO;
 using Toolkit.Interfaces;
 using Benefit.Domain.Benefit;
 using Benefit.Domain.Interfaces;
-using Toolkit.Mapper;
-using Benefit.Domain.Operator;
-using Benefit.Domain.AggregatesModel.Benefit;
 using Benefit.Service.Interfaces;
+using Benefit.Service.Sagas.Beneficiary.Contract;
 
 namespace MS.DDD.Microsservices.PoC.Benefit.API.Controllers;
 

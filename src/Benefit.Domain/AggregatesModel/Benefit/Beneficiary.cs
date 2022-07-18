@@ -45,11 +45,11 @@ public class Beneficiary : TimeCycleEntity
 
     public void Validate(StringBuilder errors)
     {
-        if (Name.IsEmpty())
-            errors.AppendLine("The field \"Name\" cannot be empty.");
-        if (CPF.IsFilled() && !CPF.IsValidCPF())
-            errors.AppendLine("The field \"CPF\" is not valid.");
-        if (BirthDate.HasValue && BirthDate.Value > DateTime.Now)
-            errors.AppendLine("The field \"BirthDate\" cannot be in the future.");
+        //if (Name.IsEmpty())
+        //    errors.AppendLine("The field \"Name\" cannot be empty.");
+        //if (CPF.IsFilled() && !CPF.IsValidCPF())
+        //    errors.AppendLine("The field \"CPF\" is not valid.");
+        //if (BirthDate.HasValue && BirthDate.Value > DateTime.Now)
+        //    errors.AppendLine("The field \"BirthDate\" cannot be in the future.");
     }
 }

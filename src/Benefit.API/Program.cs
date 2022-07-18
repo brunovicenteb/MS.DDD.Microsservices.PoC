@@ -5,7 +5,7 @@ using Toolkit.TransactionalOutBox;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.BeginProducer<BenefitContext>(DatabaseType.Postgress)
+builder.BeginProducer<BenefitContext>(DatabaseType.Postgress, true)
     .UseSerilog()
     .DoNotOpenTelemetry()
     .UseDatabase()
