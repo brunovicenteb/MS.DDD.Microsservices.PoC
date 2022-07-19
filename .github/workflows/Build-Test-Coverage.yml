@@ -2,7 +2,7 @@ name: Build-Tests
 
 on:
   push:
-    branches: [ main, add-code-covering ]
+    branches: [ main, add-code-covering, feature/outbox-pattern ]
   pull_request:
     branches: [ main ]
   workflow_dispatch:
