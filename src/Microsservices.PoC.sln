@@ -25,7 +25,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Benefit.Service", "Benefit.
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{0E097A9D-199B-4C1C-AB8F-CDE1E178FD82}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Benefit.Test", "Benefit.Test\Benefit.Test.csproj", "{47738219-82C3-43FD-8CF4-AE82CADF8554}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{E9F18424-ED80-45D4-ACBE-13CB9B50ECEB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{2B5B7044-079D-47AD-B2D2-CEE5F57A49DC}"
+	ProjectSection(SolutionItems) = preProject
+		..\.github\workflows\Build-Test-Coverage.yml = ..\.github\workflows\Build-Test-Coverage.yml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benefit.Test", "Benefit.Test\Benefit.Test.csproj", "{E876CA88-71FB-4325-9F6D-774610DF2DCA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,10 +64,10 @@ Global
 		{0E097A9D-199B-4C1C-AB8F-CDE1E178FD82}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0E097A9D-199B-4C1C-AB8F-CDE1E178FD82}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0E097A9D-199B-4C1C-AB8F-CDE1E178FD82}.Release|Any CPU.Build.0 = Release|Any CPU
-		{47738219-82C3-43FD-8CF4-AE82CADF8554}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{47738219-82C3-43FD-8CF4-AE82CADF8554}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{47738219-82C3-43FD-8CF4-AE82CADF8554}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{47738219-82C3-43FD-8CF4-AE82CADF8554}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E876CA88-71FB-4325-9F6D-774610DF2DCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E876CA88-71FB-4325-9F6D-774610DF2DCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E876CA88-71FB-4325-9F6D-774610DF2DCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E876CA88-71FB-4325-9F6D-774610DF2DCA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -71,7 +78,8 @@ Global
 		{F07285A2-5A76-430B-8E89-BF3096D2F5ED} = {0A5778FD-79ED-499A-A5E3-8A30F7434822}
 		{CEB0347A-0FEF-44F0-8DBC-DBD78B8F5CE9} = {0277A7BB-0375-403F-859D-A0E4F3057F7C}
 		{773839F8-E72A-4D94-BBBA-ECBE19294E82} = {3D7EABA8-1775-4CB5-96FC-20E483FBA671}
-		{47738219-82C3-43FD-8CF4-AE82CADF8554} = {F1510846-1C56-4D9C-B619-854F256E2341}
+		{2B5B7044-079D-47AD-B2D2-CEE5F57A49DC} = {E9F18424-ED80-45D4-ACBE-13CB9B50ECEB}
+		{E876CA88-71FB-4325-9F6D-774610DF2DCA} = {F1510846-1C56-4D9C-B619-854F256E2341}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EE571778-8F62-4A87-AC43-0FBAC40F7DF4}

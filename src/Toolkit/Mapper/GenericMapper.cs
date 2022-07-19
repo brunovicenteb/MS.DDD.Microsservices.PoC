@@ -1,4 +1,5 @@
-﻿using Toolkit.Interfaces;
+﻿using System.Runtime.CompilerServices;
+using Toolkit.Interfaces;
 
 namespace Toolkit.Mapper;
 
