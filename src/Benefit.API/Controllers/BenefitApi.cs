@@ -64,7 +64,7 @@ public class BenefitApi : ManagedController
         Func<object, IActionResult> action = delegate (object result)
         {
             Beneficiary b = result as Beneficiary;
-            return CreatedAtAction(nameof(GetBeneficiaryById).ToLower(), new { id = b.ID });
+            return CreatedAtAction(nameof(GetBeneficiaryById).ToLower(), new { id = b.ID }, null);
         };
         return await TryExecute(action, execute);
     }
