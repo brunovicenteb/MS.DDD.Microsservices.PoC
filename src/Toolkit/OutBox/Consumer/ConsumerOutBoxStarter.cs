@@ -42,6 +42,7 @@ internal class ConsumerOutBoxStarter<T> : OutBoxStarter where T : OutBoxDbContex
             context.RegisterConsumers(Builder.Services, busRegistration);
             busRegistration.UsingRabbitMq((context, cfg) =>
             {
+                cfg.Host(host);
                 cfg.ConfigureEndpoints(context);
             });
         });
