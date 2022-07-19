@@ -1,9 +1,7 @@
 using System.Reflection;
 using Benefit.Service.Infra;
 using Microsoft.OpenApi.Models;
-using Benefit.Service.Services;
 using Benefit.Domain.Interfaces;
-using Benefit.Service.Interfaces;
 using Newtonsoft.Json.Converters;
 
 namespace Benefit.API.IoC;
@@ -25,7 +23,6 @@ public static class StartBenefitApi
             xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             opt.IncludeXmlComments(xmlPath);
         });
-        services.AddScoped<IBeneficiaryService, BeneficiaryService>();
         services.AddScoped<IBenefitRepository, BenefitRepository>();
         return services;
     }

@@ -3,9 +3,11 @@ using Toolkit.Web;
 using Toolkit.Mapper;
 using Benefit.API.DTO;
 using Toolkit.Interfaces;
+using Toolkit.Exceptions;
 using Benefit.Domain.Benefit;
+using Benefit.Domain.Operator;
 using Benefit.Domain.Interfaces;
-using Benefit.Service.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Benefit.Service.Sagas.Beneficiary.Contract;
 
 namespace MS.DDD.Microsservices.PoC.Benefit.API.Controllers;
@@ -14,10 +16,10 @@ namespace MS.DDD.Microsservices.PoC.Benefit.API.Controllers;
 [Route("[controller]")]
 public class BenefitApi : ManagedController
 {
-    public BenefitApi(IBeneficiaryService service, IBenefitRepository benefitRepository)
+    public BenefitApi(IPublishEndpoint publisher, IBenefitRepository repository)
     {
-        _Service = service;
-        _BenefitRepository = benefitRepository;
+        _Publisher = publisher;
+        _Repository = repository;
         _Mapper = MapperFactory.Nest<Beneficiary, BeneficiaryResponse>()
             .Nest<Beneficiary, BeneficiarySubmitted>()
             .Nest<TheAudioDbWork, BeneficiaryTheAudioDbWorkResponse>()
@@ -25,8 +27,8 @@ public class BenefitApi : ManagedController
     }
 
     private readonly IGenericMapper _Mapper;
-    private readonly IBeneficiaryService _Service;
-    private readonly IBenefitRepository _BenefitRepository;
+    private readonly IPublishEndpoint _Publisher;
+    private readonly IBenefitRepository _Repository;
 
     /// <summary>Returns the registered benefits with the possibility of pagination.</summary>
     /// <param name="limit">Maximum number of results possible.</param>
@@ -59,7 +61,7 @@ public class BenefitApi : ManagedController
     {
         Func<Task<object>> execute = async delegate
         {
-            return await _Service.SubmitBeneficiary(beneficiary.Operator, beneficiary.Name, beneficiary.CPF, beneficiary.BirthDate);
+            return await SubmitBeneficiary(beneficiary.Operator, beneficiary.Name, beneficiary.CPF, beneficiary.BirthDate);
         };
         Func<object, IActionResult> action = delegate (object result)
         {
@@ -71,13 +73,34 @@ public class BenefitApi : ManagedController
 
     private async Task<List<BeneficiaryResponse>> GetBeneficiaries(int? limit = 10, int? start = 0)
     {
-        var resutlt = await _BenefitRepository.GetAsync(limit ?? 10, start ?? 0);
+        var resutlt = await _Repository.GetAsync(limit ?? 10, start ?? 0);
         return resutlt.Select(o => _Mapper.Map<Beneficiary, BeneficiaryResponse>(o)).ToList();
     }
 
     private async Task<BeneficiaryResponse> GetBeneficiaryByIdAsync(int id)
     {
-        var beneficiary = await _BenefitRepository.GetObjectByIDAsync(id);
+        var beneficiary = await _Repository.GetObjectByIDAsync(id);
         return _Mapper.Map<Beneficiary, BeneficiaryResponse>(beneficiary);
+    }
+
+    private async Task<Beneficiary> SubmitBeneficiary(OperatorType operatorType, string name, string cpf, DateTime? birthDate)
+    {
+        try
+        {
+            var op = Operator.CreateOperator(operatorType);
+            var entity = op.CreateBeneficiary(name, cpf, birthDate);
+            if (await _Repository.GetByCPF(cpf) != null)
+                throw new DomainRuleException($"There is already a beneficiary registered with the cpf \"{cpf}\".");
+            await _Repository.AddAsync(entity, false);
+            var evt = _Mapper.Map<Beneficiary, BeneficiarySubmitted>(entity);
+            evt.CorrelationId = NewId.NextGuid();
+            await _Publisher.Publish(evt);
+            await _Repository.SaveChangesAsync();
+            return entity;
+        }
+        catch (DbUpdateException exception)
+        {
+            throw new DuplicateRegistrationException("Duplicate registration", exception);
+        }
     }
 }
