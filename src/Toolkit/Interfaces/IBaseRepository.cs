@@ -1,5 +1,4 @@
 ﻿using Toolkit.Data;
-using Microsoft.EntityFrameworkCore;
 
 namespace Toolkit.Interfaces;
 
@@ -11,4 +10,5 @@ public interface IBaseRepository<TEntity> where TEntity : BaseEntity
     Task<bool> DeleteAsync(int id, bool applySave = true);
     Task<TEntity> GetObjectByIDAsync(int id);
     Task<IEnumerable<TEntity>> GetAsync(int limit, int start);
+    Task<bool> SaveChangesAsync();
 }

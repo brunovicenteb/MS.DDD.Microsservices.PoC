@@ -7,6 +7,7 @@ using Benefit.Service.APIs.Imdb;
 using Benefit.Domain.Interfaces;
 using Toolkit.TransactionalOutBox;
 using Microsoft.EntityFrameworkCore;
+using Benefit.Service.APIs.TheAudioDb;
 using Benefit.Service.Sagas.Beneficiary;
 using Microsoft.Extensions.DependencyInjection;
 using Benefit.Service.Sagas.Beneficiary.Contract;
@@ -20,8 +21,9 @@ public class BenefitContext : OutBoxDbContext
     public static string ImdbKey
         => _ImdbKey;
     private static string _ImdbKey;
-    private const string _ImdbKeyVariableName = "IMDB_API_KEY";
     private const string _ImdbUrlApi = "https://imdb-api.com/";
+    private const string _ImdbKeyVariableName = "IMDB_API_KEY";
+    private const string _TheAudioDbUrlApi = "https://www.theaudiodb.com/";
 
     public BenefitContext()
     {
@@ -33,6 +35,8 @@ public class BenefitContext : OutBoxDbContext
     }
 
     public DbSet<Beneficiary> Beneficiaries { get; set; }
+    public DbSet<ImdbWork> ImdbWork { get; set; }
+    public DbSet<TheAudioDbWork> TheAudioDbWork { get; set; }
 
     protected override IEnumerable<ISagaClassMap> Configurations
     {
@@ -46,6 +50,8 @@ public class BenefitContext : OutBoxDbContext
         _ImdbKey = Environment.GetEnvironmentVariable(_ImdbKeyVariableName);
         services.AddRefitClient<IImdbApiClient>()
             .ConfigureHttpClient(c => c.BaseAddress = new Uri(_ImdbUrlApi));
+        services.AddRefitClient<ITheAudioDbApiClient>()
+            .ConfigureHttpClient(c => c.BaseAddress = new Uri(_TheAudioDbUrlApi));
         busRegistration.AddConsumer<BenefiteImdbConsumer>();
         busRegistration.AddConsumer<BeneficiaryTheAudioDbConsumer>();
         busRegistration.AddConsumer<BeneficiaryNotifyFinishConsumer>();
@@ -63,16 +69,38 @@ public class BenefitContext : OutBoxDbContext
     protected override void DoModelCreating(ModelBuilder modelBuilder)
     {
         base.DoModelCreating(modelBuilder);
+        MapBeneficiary(modelBuilder);
+        MapImdbWork(modelBuilder);
+        MapTheAudioDbWork(modelBuilder);
+    }
+
+    private void MapTheAudioDbWork(ModelBuilder modelBuilder)
+    {
+        var registration = modelBuilder.Entity<TheAudioDbWork>();
+        registration.HasKey(e => e.ID);
+    }
+
+    private void MapImdbWork(ModelBuilder modelBuilder)
+    {
+        var registration = modelBuilder.Entity<ImdbWork>();
+        registration.HasKey(e => e.ID);
+        registration.Property(e => e.Title)
+                .HasMaxLength(150)
+                .IsRequired();
+    }
+
+    private void MapBeneficiary(ModelBuilder modelBuilder)
+    {
         var registration = modelBuilder.Entity<Beneficiary>();
         registration.HasKey(e => e.ID);
-        //registration.HasIndex(e => e.CPF)
-        //        .IsUnique();
+        registration.HasIndex(e => e.CPF)
+                .IsUnique();
         registration.Property(e => e.Name)
                 .HasMaxLength(50)
                 .IsRequired();
-        //registration.Property(e => e.CPF)
-        //        .HasMaxLength(11)
-        //        .IsRequired();
+        registration.Property(e => e.CPF)
+                .HasMaxLength(11)
+                .IsRequired();
         registration.Property(e => e.CreateAt)
                 .IsRequired();
         if (DbType == DatabaseType.SqlServer)

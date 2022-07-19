@@ -7,6 +7,8 @@ public static class Strings
 
     public static string SafeToLower(this string value) => value.IsEmpty() ? string.Empty : value.ToLower();
 
+    public static string ToEscapeUrlString(this string value) => value.IsEmpty() ? string.Empty : Uri.EscapeDataString(value);
+
     public static bool IsValidCPF(this string cpf)
     {
         if (cpf.IsEmpty())

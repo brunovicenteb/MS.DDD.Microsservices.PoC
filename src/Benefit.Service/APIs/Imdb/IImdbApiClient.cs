@@ -6,5 +6,5 @@ namespace Benefit.Service.APIs.Imdb;
 public interface IImdbApiClient
 {
     [Get("/en/API/SearchName/{key}/{name}")]
-    Task<ImdbPerson> GetPerson(string key, string name);
+    Task<ImdbResponse> GetPerson(string key, string name);
 }

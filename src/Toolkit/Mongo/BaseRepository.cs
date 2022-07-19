@@ -39,7 +39,7 @@ namespace Toolkit.Mongo
             await Objects.InsertOneAsync(entity);
             return await GetObjectByIDAsync(entity.ID);
         }
-            
+
         public async Task<TEntity> UpdateAsync(TEntity entity, bool applySave = true)
         {
             TEntity t = await GetObjectByIDAsync(entity.ID);
@@ -72,6 +72,12 @@ namespace Toolkit.Mongo
             return await Objects.Find(FilterDefinition<TEntity>.Empty)
                 .Skip(start)
                 .Limit(limit).ToListAsync();
+        }
+
+        public async Task<bool> SaveChangesAsync()
+        {
+            await Task.CompletedTask;
+            return false;
         }
     }
 }

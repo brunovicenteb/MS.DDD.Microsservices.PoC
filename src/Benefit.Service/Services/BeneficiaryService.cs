@@ -2,7 +2,6 @@ using MassTransit;
 using Toolkit.Mapper;
 using Toolkit.Exceptions;
 using Toolkit.Interfaces;
-using Benefit.Service.Infra;
 using Benefit.Domain.Benefit;
 using Benefit.Domain.Operator;
 using Benefit.Domain.Interfaces;
@@ -31,13 +30,12 @@ public class BeneficiaryService : IBeneficiaryService
         {
             var op = Operator.CreateOperator(operatorType);
             var entity = op.CreateBeneficiary(name, cpf, birthDate);
-            BenefitRepository repo = (BenefitRepository)_BenefitRepository;
-            await repo.Context.AddAsync(entity);
+            await _BenefitRepository.AddAsync(entity, false);
 
             var evt = _Mapper.Map<Beneficiary, BeneficiarySubmitted>(entity);
             evt.CorrelationId = NewId.NextGuid();
             await _Publisher.Publish(evt);
-            await repo.Context.SaveChangesAsync();
+            await _BenefitRepository.SaveChangesAsync();
 
             return entity;
         }

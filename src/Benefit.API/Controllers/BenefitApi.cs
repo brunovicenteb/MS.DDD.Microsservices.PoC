@@ -20,7 +20,8 @@ public class BenefitApi : ManagedController
         _BenefitRepository = benefitRepository;
         _Mapper = MapperFactory.Nest<Beneficiary, BeneficiaryResponse>()
             .Nest<Beneficiary, BeneficiarySubmitted>()
-            .Build<Work, BeneficiaryWorkResponse>();
+            .Nest<TheAudioDbWork, BeneficiaryTheAudioDbWorkResponse>()
+            .Build<ImdbWork, BeneficiaryImdbWorkResponse>();
     }
 
     private readonly IGenericMapper _Mapper;
@@ -40,13 +41,13 @@ public class BenefitApi : ManagedController
 
     /// <summary>Returns an benefit by identifier.</summary>
     /// <param name="id">Identifier of benefit.</param>
-    [HttpGet("{id}")]
+    [HttpGet("GetBeneficiaryById/{id}")]
     [ProducesResponseType(typeof(BeneficiaryResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Get(int id)
+    public async Task<IActionResult> GetBeneficiaryById(int id)
     {
-        return await TryExecuteOK(async () => await GetBeneficiaryById(id));
+        return await TryExecuteOK(async () => await GetBeneficiaryByIdAsync(id));
     }
 
     /// <summary>Create a new benefit.</summary>
@@ -63,7 +64,7 @@ public class BenefitApi : ManagedController
         Func<object, IActionResult> action = delegate (object result)
         {
             Beneficiary b = result as Beneficiary;
-            return CreatedAtAction(nameof(Get).ToLower(), new { id = b.ID });
+            return CreatedAtAction(nameof(GetBeneficiaryById).ToLower(), new { id = b.ID });
         };
         return await TryExecute(action, execute);
     }
@@ -74,7 +75,7 @@ public class BenefitApi : ManagedController
         return resutlt.Select(o => _Mapper.Map<Beneficiary, BeneficiaryResponse>(o)).ToList();
     }
 
-    private async Task<BeneficiaryResponse> GetBeneficiaryById(int id)
+    private async Task<BeneficiaryResponse> GetBeneficiaryByIdAsync(int id)
     {
         var beneficiary = await _BenefitRepository.GetObjectByIDAsync(id);
         return _Mapper.Map<Beneficiary, BeneficiaryResponse>(beneficiary);

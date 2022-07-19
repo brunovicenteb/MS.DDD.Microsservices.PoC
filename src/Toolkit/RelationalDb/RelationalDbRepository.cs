@@ -30,7 +30,7 @@ public abstract class RelationalDbRepository<TContext, TEntity> : IBaseRepositor
         return await Context.SaveChangesAsync() == 1;
     }
 
-    public async Task<TEntity> GetObjectByIDAsync(int id)
+    public virtual async Task<TEntity> GetObjectByIDAsync(int id)
     {
         return await Collection
             .AsNoTracking()
@@ -61,5 +61,11 @@ public abstract class RelationalDbRepository<TContext, TEntity> : IBaseRepositor
         if (applySave)
             await Context.SaveChangesAsync();
         return await GetObjectByIDAsync(entity.ID);
+    }
+
+    public async Task<bool> SaveChangesAsync()
+    {
+        int count = await Context.SaveChangesAsync();
+        return count > 0;
     }
 }
