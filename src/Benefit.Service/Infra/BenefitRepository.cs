@@ -65,10 +65,6 @@ public sealed class BenefitRepository : RelationalDbRepository<BenefitContext, B
 
     public async Task<Beneficiary> GetByCPF(string cpf)
     {
-        if (cpf.IsEmpty())
-            throw new ArgumentNullException($"Empty value received as argument CPF.");
-        if (!cpf.IsValidCPF())
-            throw new ArgumentNullException($"Invalid CPF value \"{cpf}\" received as argument.");
         return await Collection
             .AsNoTracking()
             .FirstOrDefaultAsync(o => o.CPF == cpf);

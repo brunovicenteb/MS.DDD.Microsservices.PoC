@@ -1,5 +1,4 @@
 ﻿using MassTransit;
-using Toolkit.Interfaces;
 using MassTransit.RetryPolicies;
 using Microsoft.Extensions.Logging;
 
@@ -23,12 +22,9 @@ public abstract class BrokerConsumer<T> : IBrokerConsumer<T> where T : class
     {
         try
         {
-            int count = 0;
             var policy = Retry.Interval(retryCount, TimeSpan.FromMilliseconds(intevalInMilliseconds));
             var result = await policy.Retry(async () =>
             {
-                if (count > 0)
-                    Logger.LogInformation($"Attemp #{++count}");
                 return await action();
             });
             return result;
