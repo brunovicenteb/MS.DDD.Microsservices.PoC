@@ -32,8 +32,8 @@ public abstract class BrokerConsumer<T> : IBrokerConsumer<T> where T : class
         catch (Exception ex)
         {
             if (failMessage.IsFilled())
-                Logger.LogError(failMessage, ex);
+                Logger.LogError(ex, failMessage);
         }
-        return default(TResult);
+        return default;
     }
 }

@@ -14,7 +14,7 @@ public sealed class DuplicateRegistrationException : BaseException
     {
     }
 
-    public DuplicateRegistrationException(string message, Exception? innerException)
+    public DuplicateRegistrationException(string message, Exception innerException)
         : base(message, innerException)
     {
     }

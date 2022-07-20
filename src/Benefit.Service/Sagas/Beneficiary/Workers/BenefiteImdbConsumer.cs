@@ -37,7 +37,7 @@ public sealed class BenefiteImdbConsumer : BrokerConsumer<BeneficiaryRegistered>
     protected override async Task ConsumeAsync(BeneficiaryRegistered message)
     {
         if (message == null)
-            throw new ArgumentNullException("Invalid message received as argument.");
+            throw new ArgumentNullException(nameof(message));
         var benefit = await _BenefitRepository.GetByCPF(message.CPF);
         if (benefit == null)
             throw new NotFoundException($"No beneficiary found with CPF=\"{message.CPF}\".");
