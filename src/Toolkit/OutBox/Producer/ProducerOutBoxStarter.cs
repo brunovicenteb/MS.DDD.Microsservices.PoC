@@ -17,6 +17,8 @@ internal class ProducerOutBoxStarter<T> : OutBoxStarter where T : OutBoxDbContex
 
     private readonly bool _RecreateDB;
 
+    protected override string TelemetryName => "producer";
+
     protected override void DoUseDatabase(string stringConnection)
     {
         Builder.Services.AddDbContext<T>(o =>

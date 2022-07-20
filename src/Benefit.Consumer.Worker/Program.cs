@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.BeginConsumer<BenefitContext>()
     .UseSerilog()
-    .DoNotOpenTelemetry()
+    .UseOpenTelemetry()
     .UseDatabase()
     .UseRabbitMq();
 

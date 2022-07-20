@@ -1,7 +1,13 @@
 ﻿using Serilog;
+using OpenTelemetry;
 using Serilog.Events;
+using System.Diagnostics;
+using OpenTelemetry.Trace;
+using MassTransit.Metadata;
+using OpenTelemetry.Resources;
 using Toolkit.TransactionalOutBox;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Toolkit.OutBox;
 
@@ -17,6 +23,8 @@ internal abstract class OutBoxStarter : ILogable, IOpenTelemetreable, IDatabasea
     protected readonly WebApplicationBuilder Builder;
     private readonly string _DbTypeVarName;
     private readonly string _DbConnectionVarName;
+
+    protected abstract string TelemetryName { get; }
 
     protected abstract void DoUseDatabase(string stringConnection);
 
@@ -70,6 +78,29 @@ internal abstract class OutBoxStarter : ILogable, IOpenTelemetreable, IDatabasea
 
     public IDatabaseable UseOpenTelemetry()
     {
+        Builder.Services.AddOpenTelemetryTracing(builder =>
+        {
+            builder.SetResourceBuilder(ResourceBuilder.CreateDefault()
+                    .AddService(TelemetryName)
+                    .AddTelemetrySdk()
+                    .AddEnvironmentVariableDetector())
+                .AddSource("MassTransit")
+                .AddAspNetCoreInstrumentation()
+                .AddJaegerExporter(o =>
+                {
+                    o.AgentHost = HostMetadataCache.IsRunningInContainer ? "jaeger" : "localhost";
+                    o.AgentPort = 6831;
+                    o.MaxPayloadSizeInBytes = 4096;
+                    o.ExportProcessorType = ExportProcessorType.Batch;
+                    o.BatchExportProcessorOptions = new BatchExportProcessorOptions<Activity>
+                    {
+                        MaxQueueSize = 2048,
+                        ScheduledDelayMilliseconds = 5000,
+                        ExporterTimeoutMilliseconds = 30000,
+                        MaxExportBatchSize = 512,
+                    };
+                });
+        });
         return this;
     }
 

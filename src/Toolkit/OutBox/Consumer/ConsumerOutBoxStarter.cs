@@ -1,8 +1,8 @@
 ﻿using MassTransit;
 using Toolkit.TransactionalOutBox;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Toolkit.OutBox.Consumer;
 
@@ -12,6 +12,8 @@ internal class ConsumerOutBoxStarter<T> : OutBoxStarter where T : OutBoxDbContex
         : base(builder, dbTypeVarName, dbConnectionVariableName)
     {
     }
+
+    protected override string TelemetryName => "consumer";
 
     protected override void DoUseDatabase(string stringConnection)
     {
@@ -46,6 +48,33 @@ internal class ConsumerOutBoxStarter<T> : OutBoxStarter where T : OutBoxDbContex
             });
         });
     }
+
+    //public override IDatabaseable UseOpenTelemetry()
+    //{
+    //    Builder.Services.AddOpenTelemetryTracing(builder =>
+    //    {
+    //        builder.SetResourceBuilder(ResourceBuilder.CreateDefault()
+    //                .AddService("consumer")
+    //                .AddTelemetrySdk()
+    //                .AddEnvironmentVariableDetector())
+    //            .AddSource("MassTransit")
+    //            .AddJaegerExporter(o =>
+    //            {
+    //                o.AgentHost = HostMetadataCache.IsRunningInContainer ? "jaeger" : "localhost";
+    //                o.AgentPort = 6831;
+    //                o.MaxPayloadSizeInBytes = 4096;
+    //                o.ExportProcessorType = ExportProcessorType.Batch;
+    //                o.BatchExportProcessorOptions = new BatchExportProcessorOptions<Activity>
+    //                {
+    //                    MaxQueueSize = 2048,
+    //                    ScheduledDelayMilliseconds = 5000,
+    //                    ExporterTimeoutMilliseconds = 30000,
+    //                    MaxExportBatchSize = 512,
+    //                };
+    //            });
+    //    });
+    //    return this;
+    //}
 
     private void UsePostgress(string stringConnection, DbContextOptionsBuilder optionsBuilder)
     {

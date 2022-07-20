@@ -26,6 +26,22 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
 
+  jaeger:
+    container_name: jaeger.log  
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "5775:5775/udp"
+      - "6831:6831/udp"
+      - "6832:6832/udp"
+      - "5778:5778"
+      - "16686:16686"
+      - "14250:14250"
+      - "14268:14268"
+      - "14269:14269"
+      - "9411:9411"
+    networks:
+      - benefit-compose-network      
+
   pgadmin:
     container_name: postgres.admin
     restart: always  
@@ -49,10 +65,11 @@ services:
     ports:
       - "8001:80"
     build:
-      context: .
+      context: .  
       dockerfile: Benefit.API/Dockerfile
     depends_on:
       - rabbit
+      - jaeger
       - postgres
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
@@ -60,6 +77,10 @@ services:
       - RABBIT_MQ=amqp://guest:guest@rabbit:5672
       - DATABASE_TYPE=Postgres
       - DATABASE_CONNECTION=Host=postgres;Database=Benefit;Port=5432;Username=guest;Password=guest
+      - JAEGER_AGENT_HOST=jaeger
+      - JAEGER_AGENT_PORT=6831
+      - JAEGER_SAMPLER_TYPE=remote
+      - JAEGER_SAMPLING_ENDPOINT=http://jaeger:5778/sampling
     volumes:
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
     networks:
@@ -73,11 +94,16 @@ services:
       dockerfile: Benefit.Consumer.Worker/Dockerfile
     depends_on:
       - rabbit
+      - jaeger      
       - postgres
     environment:
       - RABBIT_MQ=amqp://guest:guest@rabbit:5672
       - DATABASE_TYPE=Postgres
       - DATABASE_CONNECTION=Host=postgres;Database=Benefit;Port=5432;Username=guest;Password=guest
+      - JAEGER_AGENT_HOST=jaeger
+      - JAEGER_AGENT_PORT=6831
+      - JAEGER_SAMPLER_TYPE=remote
+      - JAEGER_SAMPLING_ENDPOINT=http://jaeger:5778/sampling      
     networks:
       - benefit-compose-network
 
