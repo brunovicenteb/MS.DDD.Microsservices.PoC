@@ -32,20 +32,22 @@ public sealed class BenefiteImdbConsumer : BrokerConsumer<BeneficiaryRegistered>
     private readonly IBenefitRepository _BenefitRepository;
     private readonly IGenericMapper _Mapper;
 
-    protected override async Task<BrokerConsumerResult> ConsumeAsync(BeneficiaryRegistered message)
+    protected override ILogger Logger => _Logger;
+
+    protected override async Task ConsumeAsync(BeneficiaryRegistered message)
     {
         if (message == null)
             throw new ArgumentNullException("Invalid message received as argument.");
         var benefit = await _BenefitRepository.GetByCPF(message.CPF);
         if (benefit == null)
             throw new NotFoundException($"No beneficiary found with CPF=\"{message.CPF}\".");
-        //var imdbPerson = _ApiClient.GetPerson(BenefitContext.ImdbKey, benefit.Name.ToEscapeUrlString()).Result;
-        //if (imdbPerson != null)
-        //    await SaveImdbWorks(benefit, imdbPerson);
+        var apiResponse = await TryExecute(async () => await _ApiClient.GetPerson(BenefitContext.ImdbKey, benefit.Name),
+            $"Unable to consume Imdb API for beneficiary \"{benefit.Name}\" even after five attempts.");
+        if (apiResponse != null)
+            await SaveImdbWorks(benefit, apiResponse);
         var evt = _Mapper.Map<BeneficiaryRegistered, BeneficiaryImdbIntegrated>(message);
         await _Publisher.Publish(evt);
         await _BenefitRepository.SaveChangesAsync();
-        return Sucess();
     }
 
     private async Task<bool> SaveImdbWorks(Beneficiary benefit, ImdbResponse imdbPerson)

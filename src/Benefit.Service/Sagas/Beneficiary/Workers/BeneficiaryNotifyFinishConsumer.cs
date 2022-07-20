@@ -24,7 +24,9 @@ public sealed class BeneficiaryNotifyFinishConsumer : BrokerConsumer<Beneficiary
     private readonly IBenefitRepository _BenefitRepository;
     private readonly IGenericMapper _Mapper;
 
-    protected override async Task<BrokerConsumerResult> ConsumeAsync(BeneficiaryTheAudioDbIntegrated message)
+    protected override ILogger Logger => _Logger;
+
+    protected override async Task ConsumeAsync(BeneficiaryTheAudioDbIntegrated message)
     {
         if (message == null)
             throw new ArgumentNullException("Invalid message received as argument.");
@@ -34,6 +36,5 @@ public sealed class BeneficiaryNotifyFinishConsumer : BrokerConsumer<Beneficiary
         _Logger.LogInformation("BeneficiaryNotifyFinishConsumer executed.");
         var evt = _Mapper.Map<BeneficiaryTheAudioDbIntegrated, BeneficiaryNotifyFinished>(message);
         await _Publisher.Publish(evt);
-        return Sucess();
     }
 }

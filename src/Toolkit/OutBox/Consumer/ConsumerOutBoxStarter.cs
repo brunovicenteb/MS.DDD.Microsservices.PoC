@@ -8,9 +8,8 @@ namespace Toolkit.OutBox.Consumer;
 
 internal class ConsumerOutBoxStarter<T> : OutBoxStarter where T : OutBoxDbContext, new()
 {
-    internal ConsumerOutBoxStarter(WebApplicationBuilder builder, DatabaseType dbType,
-        string dbConnectionVariableName = "DATABASE_CONNECTION")
-        : base(builder, dbType, dbConnectionVariableName)
+    internal ConsumerOutBoxStarter(WebApplicationBuilder builder, string dbTypeVarName, string dbConnectionVariableName)
+        : base(builder, dbTypeVarName, dbConnectionVariableName)
     {
     }
 

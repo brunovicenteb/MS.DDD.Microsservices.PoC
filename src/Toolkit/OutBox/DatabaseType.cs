@@ -3,5 +3,5 @@
 public enum DatabaseType
 {
     SqlServer,
-    Postgress
+    Postgres
 }

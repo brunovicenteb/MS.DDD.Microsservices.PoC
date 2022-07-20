@@ -7,15 +7,15 @@ namespace Toolkit.OutBox;
 
 public static class OutBoxFactory
 {
-    public static ILogable BeginProducer<T>(this WebApplicationBuilder builder, DatabaseType dbType,
-        bool recreateDb = false, string dbConnectionVarName = "DATABASE_CONNECTION") where T : OutBoxDbContext
+    public static ILogable BeginProducer<T>(this WebApplicationBuilder builder,
+        bool recreateDb = false, string dbTypeVarName = "DATABASE_TYPE", string dbConnectionVarName = "DATABASE_CONNECTION") where T : OutBoxDbContext
     {
-        return new ProducerOutBoxStarter<T>(builder, dbType, recreateDb, dbConnectionVarName);
+        return new ProducerOutBoxStarter<T>(builder, dbTypeVarName, recreateDb, dbConnectionVarName);
     }
 
-    public static ILogable BeginConsumer<T>(this WebApplicationBuilder builder, DatabaseType dbType,
+    public static ILogable BeginConsumer<T>(this WebApplicationBuilder builder, string dbTypeVarName = "DATABASE_TYPE",
         string dbConnectionVarName = "DATABASE_CONNECTION") where T : OutBoxDbContext, new()
     {
-        return new ConsumerOutBoxStarter<T>(builder, dbType, dbConnectionVarName);
+        return new ConsumerOutBoxStarter<T>(builder, dbTypeVarName, dbConnectionVarName);
     }
 }

@@ -1,11 +1,10 @@
 using Toolkit.OutBox;
 using Benefit.Service.IoC;
-using Toolkit.TransactionalOutBox;
 using Microsoft.AspNetCore.Builder;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.BeginConsumer<BenefitContext>(DatabaseType.Postgress)
+builder.BeginConsumer<BenefitContext>()
     .UseSerilog()
     .DoNotOpenTelemetry()
     .UseDatabase()

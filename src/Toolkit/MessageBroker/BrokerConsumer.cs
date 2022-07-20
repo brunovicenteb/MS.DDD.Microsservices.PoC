@@ -1,32 +1,43 @@
 ﻿using MassTransit;
 using Toolkit.Interfaces;
-using System.Diagnostics;
-using MassTransit.Metadata;
+using MassTransit.RetryPolicies;
+using Microsoft.Extensions.Logging;
 
 namespace Toolkit.MessageBroker;
 
 public abstract class BrokerConsumer<T> : IBrokerConsumer<T> where T : class
 {
-    protected abstract Task<BrokerConsumerResult> ConsumeAsync(T message);
+    protected abstract Task ConsumeAsync(T message);
 
-    protected virtual void OnConsumed(ConsumeContext<T> context, BrokerConsumerResult previousResult)
-    {
-    }
-
-    protected BrokerConsumerResult Sucess(IIdentifiable generatedArtifact = null)
-    {
-        return new BrokerConsumerSucess(generatedArtifact);
-    }
+    protected abstract ILogger Logger { get; }
 
     public async Task Consume(ConsumeContext<T> context)
     {
-        var timer = Stopwatch.StartNew();
-        string consumerName = GetType().Name;
         if (context == null || context.Message == null)
             return;
-        var result = await ConsumeAsync(context.Message);
-        if (result.ResultType != BrokerConsumerResultType.Sucess)
-            return;
-        OnConsumed(context, result);
+        await ConsumeAsync(context.Message);
+    }
+
+    protected async Task<TResult> TryExecute<TResult>(Func<Task<TResult>> action, string failMessage = null, int retryCount = 5, double intevalInMilliseconds = 100)
+        where TResult : class
+    {
+        try
+        {
+            int count = 0;
+            var policy = Retry.Interval(retryCount, TimeSpan.FromMilliseconds(intevalInMilliseconds));
+            var result = await policy.Retry(async () =>
+            {
+                if (count > 0)
+                    Logger.LogInformation($"Attemp #{++count}");
+                return await action();
+            });
+            return result;
+        }
+        catch (Exception ex)
+        {
+            if (failMessage.IsFilled())
+                Logger.LogError(failMessage, ex);
+        }
+        return default(TResult);
     }
 }

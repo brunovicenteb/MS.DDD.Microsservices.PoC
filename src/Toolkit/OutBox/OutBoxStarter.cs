@@ -7,15 +7,15 @@ namespace Toolkit.OutBox;
 
 internal abstract class OutBoxStarter : ILogable, IOpenTelemetreable, IDatabaseable, IBrokeable
 {
-    internal OutBoxStarter(WebApplicationBuilder builder, DatabaseType dbType,
-        string dbConnectionVarName = "DATABASE_CONNECTION")
+    internal OutBoxStarter(WebApplicationBuilder builder, string dbTypeVarName, string dbConnectionVarName)
     {
         Builder = builder;
         _DbConnectionVarName = dbConnectionVarName;
-        OutBoxDbContext.SetDbType(dbType);
+        _DbTypeVarName = dbTypeVarName;
     }
 
     protected readonly WebApplicationBuilder Builder;
+    private readonly string _DbTypeVarName;
     private readonly string _DbConnectionVarName;
 
     protected abstract void DoUseDatabase(string stringConnection);
@@ -24,7 +24,16 @@ internal abstract class OutBoxStarter : ILogable, IOpenTelemetreable, IDatabasea
 
     public IBrokeable UseDatabase()
     {
-        var db = OutBoxDbContext.DbType == DatabaseType.SqlServer ? "SqlServer" : "Postgress";
+        if (_DbTypeVarName.IsEmpty())
+            throw new ArgumentNullException($"DbType variable name not provided. Unable to start consumer target host.");
+        var strDbType = Environment.GetEnvironmentVariable(_DbTypeVarName);
+        if (strDbType.IsEmpty())
+            throw new ArgumentNullException($"Unable to identify DbType on {_DbTypeVarName} variable. Unable to start Transactional OutBox.");
+        DatabaseType dbType;
+        if (!Enum.TryParse(strDbType, out dbType))
+            throw new ArgumentNullException($"Invalid DbType ({strDbType}) informed on {_DbTypeVarName} variable. Unable to start Transactional OutBox.");
+        OutBoxDbContext.SetDbType(dbType);
+        var db = Enum.GetName(OutBoxDbContext.DbType);
         if (_DbConnectionVarName.IsEmpty())
             throw new ArgumentNullException($"{db} Connection variable name not provided. Unable to start consumer target host.");
         var stringConnection = Environment.GetEnvironmentVariable(_DbConnectionVarName);

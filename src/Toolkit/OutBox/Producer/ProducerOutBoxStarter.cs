@@ -9,9 +9,8 @@ namespace Toolkit.OutBox.Producer;
 
 internal class ProducerOutBoxStarter<T> : OutBoxStarter where T : OutBoxDbContext
 {
-    internal ProducerOutBoxStarter(WebApplicationBuilder builder, DatabaseType dbType,
-        bool recreateDb = false, string dbConnectionVarName = "DATABASE_CONNECTION")
-        : base(builder, dbType, dbConnectionVarName)
+    internal ProducerOutBoxStarter(WebApplicationBuilder builder, string dbTypeVarName, bool recreateDb, string dbConnectionVarName)
+        : base(builder, dbTypeVarName, dbConnectionVarName)
     {
         _RecreateDB = recreateDb;
     }
