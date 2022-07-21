@@ -2,5 +2,5 @@
 
 public interface ILogable
 {
-    public IOpenTelemetreable UseSerilog();
+    public ITelemetreable UseSerilog();
 }
