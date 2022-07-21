@@ -12,7 +12,7 @@ public abstract class BaseOperator
     public Beneficiary CreateBeneficiary(string name, string cpf, DateTime? birthDate)
     {
         var erros = new StringBuilder();
-        var beneficiary = new Beneficiary(string.Empty, Type, name, cpf, birthDate, DateTime.UtcNow, null, null);
+        var beneficiary = new Beneficiary(0, Type, name, cpf, birthDate, DateTime.UtcNow, null, null);
         beneficiary.Validate(erros);
         ValidateBeneficiary(erros, beneficiary);
         var foundedErros = erros.ToString();

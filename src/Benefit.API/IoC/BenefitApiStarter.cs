@@ -1,10 +1,8 @@
 using System.Reflection;
-using Benefit.Domain.Interfaces;
-using Microsoft.OpenApi.Models;
-using Newtonsoft.Json.Converters;
-using Toolkit.MessageBroker;
 using Benefit.Service.Infra;
-using Toolkit.Mongo;
+using Microsoft.OpenApi.Models;
+using Benefit.Domain.Interfaces;
+using Newtonsoft.Json.Converters;
 
 namespace Benefit.API.IoC;
 
@@ -25,8 +23,6 @@ public static class StartBenefitApi
             xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             opt.IncludeXmlComments(xmlPath);
         });
-        services.AddProducers();
-        services.AddMongoDb();
         services.AddScoped<IBenefitRepository, BenefitRepository>();
         return services;
     }

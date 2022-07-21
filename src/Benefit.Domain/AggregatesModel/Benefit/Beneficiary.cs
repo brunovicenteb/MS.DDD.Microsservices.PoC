@@ -12,7 +12,7 @@ public class Beneficiary : TimeCycleEntity
     {
     }
 
-    public Beneficiary(string id, OperatorType operatorType, string name, string cpf, DateTime? birthDate,
+    public Beneficiary(int id, OperatorType operatorType, string name, string cpf, DateTime? birthDate,
         DateTime createAt, DateTime? updateAt, DateTime? deletedAt)
         : base(id, createAt, updateAt, deletedAt)
     {
@@ -26,7 +26,8 @@ public class Beneficiary : TimeCycleEntity
     public string Name { get; set; }
     public string CPF { get; set; }
     public DateTime? BirthDate { get; set; }
-    public Work[] Works { get; set; }
+    public ICollection<ImdbWork> ImdbWorks { get; set; }
+    public ICollection<TheAudioDbWork> TheAudioDbWorks { get; set; }
 
     public bool IsUnderAge
     {

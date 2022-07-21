@@ -1,12 +1,14 @@
-using Toolkit.Mongo;
-using Toolkit.MessageBroker;
-using Benefit.Service.Workers;
+using Toolkit.OutBox;
+using Benefit.Service.IoC;
 using Microsoft.AspNetCore.Builder;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddMongoDb();
-builder.Services.AddConsumers<BenefitConsumerFactory>();
+builder.BeginConsumer<BenefitContext>()
+    .UseSerilog()
+    .UseOpenTelemetry()
+    .UseDatabase()
+    .UseRabbitMq();
 
 var app = builder.Build();
 app.Run();

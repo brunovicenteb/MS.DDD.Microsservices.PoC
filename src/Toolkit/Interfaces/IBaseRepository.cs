@@ -4,10 +4,11 @@ namespace Toolkit.Interfaces;
 
 public interface IBaseRepository<TEntity> where TEntity : BaseEntity
 {
-    long Count();
-    TEntity Add(TEntity entity);
-    TEntity Update(TEntity entity);
-    bool Delete(string id);
-    TEntity GetObjectByID(string id);
-    IEnumerable<TEntity> Get(int limit, int start);
+    Task<long> CountAsync();
+    Task<TEntity> AddAsync(TEntity entity, bool applySave = true);
+    Task<TEntity> UpdateAsync(TEntity entity, bool applySave = true);
+    Task<bool> DeleteAsync(int id, bool applySave = true);
+    Task<TEntity> GetObjectByIDAsync(int id);
+    Task<IEnumerable<TEntity>> GetAsync(int limit, int start);
+    Task<bool> SaveChangesAsync();
 }

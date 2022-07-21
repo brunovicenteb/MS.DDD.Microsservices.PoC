@@ -1,44 +1,39 @@
 ﻿using MassTransit;
-using System.Diagnostics;
-using MassTransit.Metadata;
-using Toolkit.Interfaces;
+using MassTransit.RetryPolicies;
+using Microsoft.Extensions.Logging;
 
 namespace Toolkit.MessageBroker;
 
 public abstract class BrokerConsumer<T> : IBrokerConsumer<T> where T : class
 {
-    protected abstract BrokerConsumerResult Consume(T message);
+    protected abstract Task ConsumeAsync(T message);
 
-    protected virtual void OnConsumed(ConsumeContext<T> context, BrokerConsumerResult previousResult)
-    {
-    }
-
-    protected BrokerConsumerResult Sucess(IIdentifiable generatedArtifact = null)
-    {
-        return new BrokerConsumerSucess(generatedArtifact);
-    }
+    protected abstract ILogger Logger { get; }
 
     public async Task Consume(ConsumeContext<T> context)
     {
-        var timer = Stopwatch.StartNew();
+        if (context == null || context.Message == null)
+            return;
+        await ConsumeAsync(context.Message);
+    }
+
+    protected async Task<TResult> TryExecute<TResult>(Func<Task<TResult>> action, string failMessage = null, int retryCount = 5, double intevalInMilliseconds = 100)
+        where TResult : class
+    {
         try
         {
-            string consumerName = GetType().Name;
-            if (context == null || context.Message == null)
+            var policy = Retry.Interval(retryCount, TimeSpan.FromMilliseconds(intevalInMilliseconds));
+            var result = await policy.Retry(async () =>
             {
-                await Console.Out.WriteAsync($"{consumerName} called without message.");
-                return;
-            }
-            var result = Consume(context.Message);
-            if (result.ResultType != BrokerConsumerResultType.Sucess)
-                return;
-            await Console.Out.WriteAsync($"{consumerName} successfully completed.");
-            await context.NotifyConsumed(timer.Elapsed, TypeMetadataCache<T>.ShortName);
-            OnConsumed(context, result);
+                return await action();
+            });
+            return result;
         }
         catch (Exception ex)
         {
-            await context.NotifyFaulted(timer.Elapsed, TypeMetadataCache<T>.ShortName, ex);
+            if (failMessage.IsFilled())
+                Logger.LogError(ex, failMessage);
         }
+        return default;
     }
 }

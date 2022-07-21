@@ -1,11 +1,16 @@
-using Serilog;
+using Toolkit.OutBox;
 using Benefit.API.IoC;
+using Benefit.Service.IoC;
 
 var builder = WebApplication.CreateBuilder(args);
 
-Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration)
-    .CreateLogger();
+builder.BeginProducer<BenefitContext>()
+    .UseSerilog()
+    .UseOpenTelemetry()
+    .UseDatabase()
+    .UseRabbitMq();
+
+builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.ConfigBenefitApi();
 
@@ -17,9 +22,5 @@ if (app.Environment.IsDevelopment())
 app.UseRouting();
 app.UseBenefitApi();
 app.MapControllers();
-
-Log.Logger.Information("#############################################################");
-Log.Logger.Information("###                    Running Configs                    ###");
-Log.Logger.Information("#############################################################");
 
 app.Run();

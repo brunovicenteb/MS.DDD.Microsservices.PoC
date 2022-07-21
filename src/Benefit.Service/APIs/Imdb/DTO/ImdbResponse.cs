@@ -1,6 +1,6 @@
 ﻿namespace Benefit.Service.APIs.Imdb.DTO;
 
-public class ImdbPerson
+public class ImdbResponse
 {
     public string searchType { get; set; }
     public string expression { get; set; }

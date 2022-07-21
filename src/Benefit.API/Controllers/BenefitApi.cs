@@ -1,11 +1,14 @@
 using MassTransit;
 using Toolkit.Web;
+using Toolkit.Mapper;
 using Benefit.API.DTO;
 using Toolkit.Interfaces;
-using Benefit.Domain.Events;
+using Toolkit.Exceptions;
 using Benefit.Domain.Benefit;
+using Benefit.Domain.Operator;
 using Benefit.Domain.Interfaces;
-using Toolkit.Mapper;
+using Microsoft.EntityFrameworkCore;
+using Benefit.Service.Sagas.Beneficiary.Contract;
 
 namespace MS.DDD.Microsservices.PoC.Benefit.API.Controllers;
 
@@ -13,18 +16,19 @@ namespace MS.DDD.Microsservices.PoC.Benefit.API.Controllers;
 [Route("[controller]")]
 public class BenefitApi : ManagedController
 {
-    public BenefitApi(IBus bus, IBenefitRepository benefitRepository)
+    public BenefitApi(IPublishEndpoint publisher, IBenefitRepository repository)
     {
-        _Bus = bus;
-        _BenefitRepository = benefitRepository;
+        _Publisher = publisher;
+        _Repository = repository;
         _Mapper = MapperFactory.Nest<Beneficiary, BeneficiaryResponse>()
-            .Nest<Work, BeneficiaryWorkResponse>()
-            .Build<BeneficiaryCreateRequest, BenefitInsertedEvent>();
+            .Nest<Beneficiary, BeneficiarySubmitted>()
+            .Nest<TheAudioDbWork, BeneficiaryTheAudioDbWorkResponse>()
+            .Build<ImdbWork, BeneficiaryImdbWorkResponse>();
     }
 
-    private readonly IBus _Bus;
     private readonly IGenericMapper _Mapper;
-    private readonly IBenefitRepository _BenefitRepository;
+    private readonly IPublishEndpoint _Publisher;
+    private readonly IBenefitRepository _Repository;
 
     /// <summary>Returns the registered benefits with the possibility of pagination.</summary>
     /// <param name="limit">Maximum number of results possible.</param>
@@ -39,38 +43,64 @@ public class BenefitApi : ManagedController
 
     /// <summary>Returns an benefit by identifier.</summary>
     /// <param name="id">Identifier of benefit.</param>
-    [HttpGet("{id}")]
+    [HttpGet("GetBeneficiaryById/{id}")]
     [ProducesResponseType(typeof(BeneficiaryResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Get(string id)
+    public async Task<IActionResult> GetBeneficiaryById(int id)
     {
-        return await TryExecuteOK(async () => await GetBeneficiaryById(id));
+        return await TryExecuteOK(async () => await GetBeneficiaryByIdAsync(id));
     }
 
     /// <summary>Create a new benefit.</summary>
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status202Accepted)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<AcceptedResult> CreateBenefit([FromBody] BeneficiaryCreateRequest beneficiary)
+    public async Task<IActionResult> CreateBenefit([FromBody] BeneficiaryCreateRequest beneficiary)
     {
-        var beneficiaryEvt = _Mapper.Map<BeneficiaryCreateRequest, BenefitInsertedEvent>(beneficiary);
-        await _Bus.Publish(beneficiaryEvt);
-        return Accepted();
+        Func<Task<object>> execute = async delegate
+        {
+            return await SubmitBeneficiary(beneficiary.Operator, beneficiary.Name, beneficiary.CPF, beneficiary.BirthDate);
+        };
+        Func<object, IActionResult> action = delegate (object result)
+        {
+            Beneficiary b = result as Beneficiary;
+            return CreatedAtAction(nameof(GetBeneficiaryById).ToLower(), new { id = b.ID }, null);
+        };
+        return await TryExecute(action, execute);
     }
 
     private async Task<List<BeneficiaryResponse>> GetBeneficiaries(int? limit = 10, int? start = 0)
     {
-        await Task.CompletedTask;
-        return _BenefitRepository.Get(limit ?? 10, start ?? 0)
-            .Select(o => _Mapper.Map<Beneficiary, BeneficiaryResponse>(o)).ToList();
+        var resutlt = await _Repository.GetAsync(limit ?? 10, start ?? 0);
+        return resutlt.Select(o => _Mapper.Map<Beneficiary, BeneficiaryResponse>(o)).ToList();
     }
 
-    private async Task<BeneficiaryResponse> GetBeneficiaryById(string id)
+    private async Task<BeneficiaryResponse> GetBeneficiaryByIdAsync(int id)
     {
-        await Task.CompletedTask;
-        var beneficiary = _BenefitRepository.GetObjectByID(id);
+        var beneficiary = await _Repository.GetObjectByIDAsync(id);
         return _Mapper.Map<Beneficiary, BeneficiaryResponse>(beneficiary);
+    }
+
+    private async Task<Beneficiary> SubmitBeneficiary(OperatorType operatorType, string name, string cpf, DateTime? birthDate)
+    {
+        try
+        {
+            var op = Operator.CreateOperator(operatorType);
+            var entity = op.CreateBeneficiary(name, cpf, birthDate);
+            if (await _Repository.GetByCPF(cpf) != null)
+                throw new DomainRuleException($"There is already a beneficiary registered with the cpf \"{cpf}\".");
+            await _Repository.AddAsync(entity, false);
+            var evt = _Mapper.Map<Beneficiary, BeneficiarySubmitted>(entity);
+            evt.CorrelationId = NewId.NextGuid();
+            await _Publisher.Publish(evt);
+            await _Repository.SaveChangesAsync();
+            return entity;
+        }
+        catch (DbUpdateException exception)
+        {
+            throw new DuplicateRegistrationException("Duplicate registration", exception);
+        }
     }
 }

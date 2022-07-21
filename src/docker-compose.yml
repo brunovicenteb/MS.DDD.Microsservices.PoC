@@ -10,32 +10,53 @@ services:
       - "5672:5672"
     networks:
       - benefit-compose-network
-      
-  mongo:
-    container_name: mongo.db
-    restart: always
-    image: mongo
-    ports:
-      - 27017:27017
-    volumes:
-      - ./mongodb_data:/data/db
-    environment:
-      - MONGO_INITDB_DATABASE=Benefit
-    networks:
-      - benefit-compose-network
 
-  mongoexpress:
-    container_name: mongo.express
+  postgres:
+    container_name: postgres.db
     restart: always
-    image: mongo-express
+    image: postgres
     ports:
-      - 8081:8081
-    depends_on:
-      - mongo
+      - "5432:5432"
     environment:
-      - ME_CONFIG_MONGODB_URL=mongodb://mongo:27017/
+      - POSTGRES_USER=guest      
+      - POSTGRES_PASSWORD=guest
+      - POSTGRES_DB=Benefit
     networks:
       - benefit-compose-network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+  jaeger:
+    container_name: jaeger.log  
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "5775:5775/udp"
+      - "6831:6831/udp"
+      - "6832:6832/udp"
+      - "5778:5778"
+      - "16686:16686"
+      - "14250:14250"
+      - "14268:14268"
+      - "14269:14269"
+      - "9411:9411"
+    networks:
+      - benefit-compose-network      
+
+  pgadmin:
+    container_name: postgres.admin
+    restart: always  
+    image: dpage/pgadmin4
+    ports:
+      - "8002:80"
+    depends_on:
+      - postgres
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=guest@guest.com
+      - PGADMIN_DEFAULT_PASSWORD=guest
+    networks:
+      - benefit-compose-network
+    volumes:
+      - postgres_admin_data:/root/.pgadmin
      
   benefit.api:
     restart: always  
@@ -44,17 +65,22 @@ services:
     ports:
       - "8001:80"
     build:
-      context: .
+      context: .  
       dockerfile: Benefit.API/Dockerfile
     depends_on:
-      - mongo
       - rabbit
+      - jaeger
+      - postgres
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
       - RABBIT_MQ=amqp://guest:guest@rabbit:5672
-      - MONGODB_URL=mongodb://mongo:27017/
-      - MONGODB_DATABASE=Benefit
+      - DATABASE_TYPE=Postgres
+      - DATABASE_CONNECTION=Host=postgres;Database=Benefit;Port=5432;Username=guest;Password=guest
+      - JAEGER_AGENT_HOST=jaeger
+      - JAEGER_AGENT_PORT=6831
+      - JAEGER_SAMPLER_TYPE=remote
+      - JAEGER_SAMPLING_ENDPOINT=http://jaeger:5778/sampling
     volumes:
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
     networks:
@@ -67,14 +93,23 @@ services:
       context: .
       dockerfile: Benefit.Consumer.Worker/Dockerfile
     depends_on:
-      - mongo
       - rabbit
+      - jaeger      
+      - postgres
     environment:
       - RABBIT_MQ=amqp://guest:guest@rabbit:5672
-      - MONGODB_URL=mongodb://mongo:27017/
-      - MONGODB_DATABASE=Benefit
+      - DATABASE_TYPE=Postgres
+      - DATABASE_CONNECTION=Host=postgres;Database=Benefit;Port=5432;Username=guest;Password=guest
+      - JAEGER_AGENT_HOST=jaeger
+      - JAEGER_AGENT_PORT=6831
+      - JAEGER_SAMPLER_TYPE=remote
+      - JAEGER_SAMPLING_ENDPOINT=http://jaeger:5778/sampling      
     networks:
       - benefit-compose-network
+
+volumes:
+  postgres_data:
+  postgres_admin_data:
 
 networks:
   benefit-compose-network:
