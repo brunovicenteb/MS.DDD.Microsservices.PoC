@@ -11,10 +11,9 @@ namespace Benefit.Test.Toolkit
         [InlineData(" ", false)]
         [InlineData("Also has value!", false)]
         [InlineData(null, true)]
-        public void TestIsEmptyValueFunction(string valueForTest, bool expectedValue)
+        public void IsEmptyValueFunctionTest(string valueForTest, bool expectedValue)
         {
             //arrange
-
             //act
             var result = valueForTest.IsEmpty();
 
@@ -34,10 +33,9 @@ namespace Benefit.Test.Toolkit
         [InlineData(" ", true)]
         [InlineData("Also has value!", true)]
         [InlineData(null, false)]
-        public void TestIsFilledValueFunction(string valueForTest, bool expectedValue)
+        public void IsFilledValueFunctionTest(string valueForTest, bool expectedValue)
         {
             //arrange
-
             //act
             var result = valueForTest.IsFilled();
 
@@ -57,10 +55,9 @@ namespace Benefit.Test.Toolkit
         [InlineData("iT's bOth", "it's both")]
         [InlineData("", "")]
         [InlineData(null, "")]
-        public void TestSafeToLowerFunction(string valueForTest, string expectedValue)
+        public void SafeToLowerFunctionTest(string valueForTest, string expectedValue)
         {
             //arrange
-
             //act
             var result = valueForTest.SafeToLower();
             var resultOnlyLetters = new String(result.Where(c => Char.IsLetter(c)).ToArray());
@@ -76,10 +73,9 @@ namespace Benefit.Test.Toolkit
         [InlineData("890.564.540-21")]
         [InlineData("496.851.180-94")]
         [InlineData("692.144.560-70")]
-        public void TestValidCpf(string valueForTest)
+        public void ValidCpfTest(string valueForTest)
         {
             //arrange
-
             //act
             var validDocument = valueForTest.IsValidCPF();
 
@@ -94,10 +90,9 @@ namespace Benefit.Test.Toolkit
         [InlineData("557.851.180-94")]
         [InlineData("")]
         [InlineData(null)]
-        public void TestInvalidCpf(string valueForTest)
+        public void InvalidCpfTest(string valueForTest)
         {
             //arrange
-
             //act
             var validDocument = valueForTest.IsValidCPF();
 
