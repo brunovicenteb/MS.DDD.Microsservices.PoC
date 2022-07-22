@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Toolkit.OutBox;
 
-internal abstract class OutBoxStarter : ILogable, IOpenTelemetreable, IDatabaseable, IBrokeable
+internal abstract class OutBoxStarter : ILogable, ITelemetreable, IDatabaseable, IBrokeable
 {
     internal OutBoxStarter(WebApplicationBuilder builder, string dbTypeVarName, string dbConnectionVarName)
     {
@@ -32,36 +32,27 @@ internal abstract class OutBoxStarter : ILogable, IOpenTelemetreable, IDatabasea
 
     public IBrokeable UseDatabase()
     {
-        if (_DbTypeVarName.IsEmpty())
-            throw new ArgumentNullException($"DbType variable name not provided. Unable to start consumer target host.");
-        var strDbType = Environment.GetEnvironmentVariable(_DbTypeVarName);
-        if (strDbType.IsEmpty())
-            throw new ArgumentNullException($"Unable to identify DbType on {_DbTypeVarName} variable. Unable to start Transactional OutBox.");
+        var strDbType = EnvironmentReader.Read<string>(_DbTypeVarName, varEmptyError:
+            $"Unable to identify DbType on {_DbTypeVarName} variable. Unable to start Transactional OutBox.");
         DatabaseType dbType;
         if (!Enum.TryParse(strDbType, out dbType))
             throw new ArgumentNullException($"Invalid DbType ({strDbType}) informed on {_DbTypeVarName} variable. Unable to start Transactional OutBox.");
         OutBoxDbContext.SetDbType(dbType);
         var db = Enum.GetName(OutBoxDbContext.DbType);
-        if (_DbConnectionVarName.IsEmpty())
-            throw new ArgumentNullException($"{db} Connection variable name not provided. Unable to start consumer target host.");
-        var stringConnection = Environment.GetEnvironmentVariable(_DbConnectionVarName);
-        if (stringConnection.IsEmpty())
-            throw new ArgumentNullException($"Unable to identify {db} Connection on {_DbConnectionVarName} variable. Unable to start Transactional OutBox.");
+        var stringConnection = EnvironmentReader.Read<string>(_DbConnectionVarName, varEmptyError:
+            $"Unable to identify {db} Connection on {_DbConnectionVarName} variable. Unable to start Transactional OutBox.");
         DoUseDatabase(stringConnection);
         return this;
     }
 
     public void UseRabbitMq(string rabbitMqVariableName = "RABBIT_MQ")
     {
-        if (rabbitMqVariableName.IsEmpty())
-            throw new ArgumentNullException("RabbitMq variable name not provided. Unable to start consumer target host.");
-        string host = Environment.GetEnvironmentVariable(rabbitMqVariableName);
-        if (host.IsEmpty())
-            throw new ArgumentNullException($"Unable to identify RabbitMq Host on {rabbitMqVariableName} variable. Unable to start Transactional OutBox.");
+        var host = EnvironmentReader.Read<string>(rabbitMqVariableName, varEmptyError:
+            $"Unable to identify RabbitMq Host on {rabbitMqVariableName} variable. Unable to start Transactional OutBox.");
         DoUseRabbitMq(host);
     }
 
-    public IOpenTelemetreable UseSerilog()
+    public ITelemetreable UseSerilog()
     {
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Information()
@@ -76,8 +67,10 @@ internal abstract class OutBoxStarter : ILogable, IOpenTelemetreable, IDatabasea
         return this;
     }
 
-    public IDatabaseable UseOpenTelemetry()
+    public IDatabaseable UseTelemetry(string telemetryHost = "TELEMETRY_HOST")
     {
+        var host = EnvironmentReader.Read<string>(telemetryHost, varEmptyError:
+            $"Unable to identify Open Telemetry Host on {telemetryHost} variable. Unable to start Transactional OutBox.");
         Builder.Services.AddOpenTelemetryTracing(builder =>
         {
             builder.SetResourceBuilder(ResourceBuilder.CreateDefault()
@@ -88,23 +81,23 @@ internal abstract class OutBoxStarter : ILogable, IOpenTelemetreable, IDatabasea
                 .AddAspNetCoreInstrumentation()
                 .AddJaegerExporter(o =>
                 {
-                    o.AgentHost = HostMetadataCache.IsRunningInContainer ? "jaeger" : "localhost";
-                    o.AgentPort = 6831;
-                    o.MaxPayloadSizeInBytes = 4096;
+                    o.AgentHost = host;
+                    o.AgentPort = EnvironmentReader.Read("TELEMETRY_AGENT_PORT", 6831);
+                    o.MaxPayloadSizeInBytes = EnvironmentReader.Read("TELEMETRY_MAX_PAY_LOAD_SIZE_IN_BYTES", 4096);
                     o.ExportProcessorType = ExportProcessorType.Batch;
                     o.BatchExportProcessorOptions = new BatchExportProcessorOptions<Activity>
                     {
-                        MaxQueueSize = 2048,
-                        ScheduledDelayMilliseconds = 5000,
-                        ExporterTimeoutMilliseconds = 30000,
-                        MaxExportBatchSize = 512,
+                        MaxQueueSize = EnvironmentReader.Read("TELEMETRY_BATCH_MAX_QUEUE_SIZE", 2048),
+                        ScheduledDelayMilliseconds = EnvironmentReader.Read("TELEMETRY_BATCH_SCHEDULED_DELAY__MILLISECONDS", 5000),
+                        ExporterTimeoutMilliseconds = EnvironmentReader.Read("TELEMETRY_BATCH_EXPORTER_TIMEOUT_MILLISECONDS", 30000),
+                        MaxExportBatchSize = EnvironmentReader.Read("TELEMETRY_BATCH_MAX_EXPORT_BATCH_SIZE", 512)
                     };
                 });
         });
         return this;
     }
 
-    public IDatabaseable DoNotOpenTelemetry()
+    public IDatabaseable DoNotUseTelemetry()
     {
         return this;
     }

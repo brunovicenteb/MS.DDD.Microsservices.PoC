@@ -77,6 +77,7 @@ services:
       - RABBIT_MQ=amqp://guest:guest@rabbit:5672
       - DATABASE_TYPE=Postgres
       - DATABASE_CONNECTION=Host=postgres;Database=Benefit;Port=5432;Username=guest;Password=guest
+      - TELEMETRY_HOST=jaeger
       - JAEGER_AGENT_HOST=jaeger
       - JAEGER_AGENT_PORT=6831
       - JAEGER_SAMPLER_TYPE=remote
@@ -100,6 +101,7 @@ services:
       - RABBIT_MQ=amqp://guest:guest@rabbit:5672
       - DATABASE_TYPE=Postgres
       - DATABASE_CONNECTION=Host=postgres;Database=Benefit;Port=5432;Username=guest;Password=guest
+      - TELEMETRY_HOST=jaeger
       - JAEGER_AGENT_HOST=jaeger
       - JAEGER_AGENT_PORT=6831
       - JAEGER_SAMPLER_TYPE=remote
