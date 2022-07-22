@@ -1,21 +1,25 @@
-﻿using Toolkit.Exceptions;
+﻿using Benefit.Test.Toolkit.Exceptions.Mock;
+using System.Collections.Generic;
+using Toolkit.Exceptions;
 using Xunit;
 
 namespace Benefit.Test.Toolkit.Exceptions
 {
     public class ExceptionsTest
     {
-        /*public static System.Collections.Generic.IEnumerable<object[]> NotFound => throw new NotFoundException("NotFoundException");
-        private object Forbid => throw new ForbidException("ForbidException");
-        private object Unauthorized => throw new UnauthorizedException("UnauthorizedException");
-        private object BadRequest => throw new BadRequestException("BadRequestException");
-        private object DomainRule => throw new DomainRuleException("DomainRuleException");
-
         [Theory]
-        [MemberData(nameof(NotFound))]
-        public void getCustomExceptionTest()
+        [ClassData(typeof(ExceptionsMock))]
+        public void getCustomExceptionTest(BaseException exception)
         {
+            //arrange
+            //act
+            var excetionType = exception.GetType();
+            var excetionName = exception.Message;
 
-        }*/
+            //assert
+            Assert.Equal(typeof(Exception), excetionType.BaseType.BaseType);
+            Assert.IsType(excetionType, exception);
+            Assert.Equal(excetionName, excetionType.Name);
+        }
     }
 }
