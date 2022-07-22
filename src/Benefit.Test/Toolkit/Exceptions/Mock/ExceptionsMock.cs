@@ -14,6 +14,7 @@ namespace Benefit.Test.Toolkit.Exceptions.Mock
             yield return new object[] { new UnauthorizedException("UnauthorizedException") };
             yield return new object[] { new BadRequestException("BadRequestException") };
             yield return new object[] { new DomainRuleException("DomainRuleException") };
+            yield return new object[] { new DuplicateRegistrationException("DuplicateRegistrationException") };
         }
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
