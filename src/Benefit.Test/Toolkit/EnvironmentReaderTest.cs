@@ -2,7 +2,7 @@
 
 namespace Benefit.Test.Toolkit;
 
-public class EnvinromentReaderTest
+public class EnvironmentReaderTest
 {
     [Theory]
     [InlineData("")]
@@ -13,7 +13,7 @@ public class EnvinromentReaderTest
         var varName = nameof(TestReadStringVariableSucessWithDefaultValue);
         Environment.SetEnvironmentVariable(varName, defaultValue);
         //act
-        string value = EnvinromentReader.Read(varName, defaultValue);
+        string value = EnvironmentReader.Read(varName, defaultValue);
         //assert
         Assert.Equal(value, defaultValue);
     }
@@ -27,7 +27,7 @@ public class EnvinromentReaderTest
         var varName = nameof(TestReadEmptyIntVariableWitDefaultValue);
         Environment.SetEnvironmentVariable(varName, string.Empty);
         //act
-        int value = EnvinromentReader.Read(varName, defaultValue);
+        int value = EnvironmentReader.Read(varName, defaultValue);
         //assert
         Assert.Equal(value, defaultValue);
     }
@@ -40,7 +40,7 @@ public class EnvinromentReaderTest
     {
         //arrange
         //act
-        var exception = Assert.Throws<ArgumentNullException>(() => EnvinromentReader.Read<string>(varName));
+        var exception = Assert.Throws<ArgumentNullException>(() => EnvironmentReader.Read<string>(varName));
         //assert
         Assert.Equal("Value cannot be null. (Parameter 'varName')", exception.Message);
     }
@@ -56,7 +56,7 @@ public class EnvinromentReaderTest
             //arrange
             Environment.SetEnvironmentVariable(varName, varValue);
             //act
-            string value = EnvinromentReader.Read<string>(varName);
+            string value = EnvironmentReader.Read<string>(varName);
             //assert
             Assert.Equal(varValue, value);
         }
@@ -77,7 +77,7 @@ public class EnvinromentReaderTest
             //arrange
             Environment.SetEnvironmentVariable(varName, varValue);
             //act
-            var value = EnvinromentReader.Read(varName, defaultValue);
+            var value = EnvironmentReader.Read(varName, defaultValue);
             //assert
             Assert.Equal(varValue, value);
         }
@@ -98,7 +98,7 @@ public class EnvinromentReaderTest
             //arrange
             Environment.SetEnvironmentVariable(varName, varValue.ToString());
             //act
-            var value = EnvinromentReader.Read<int>(varName);
+            var value = EnvironmentReader.Read<int>(varName);
             //assert
             Assert.Equal(varValue, value);
         }
@@ -116,7 +116,7 @@ public class EnvinromentReaderTest
         string message = $"Variable {varName} not assigned on environment";
 
         //act
-        var exception = Assert.Throws<NullReferenceException>(() => EnvinromentReader.Read<string>(varName, varEmptyError: message));
+        var exception = Assert.Throws<NullReferenceException>(() => EnvironmentReader.Read<string>(varName, varEmptyError: message));
 
         //assert
         Assert.Equal(message, exception.Message);
@@ -133,7 +133,7 @@ public class EnvinromentReaderTest
             //arrange
             Environment.SetEnvironmentVariable(varName, varValue);
             //act
-            var exception = Assert.Throws<FormatException>(() => EnvinromentReader.Read<int>(varName));
+            var exception = Assert.Throws<FormatException>(() => EnvironmentReader.Read<int>(varName));
             //assert
             Assert.Equal("Input string was not in a correct format.", exception.Message);
         }

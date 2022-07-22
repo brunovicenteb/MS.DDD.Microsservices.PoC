@@ -1,6 +1,6 @@
 ﻿namespace Toolkit;
 
-public static class EnvinromentReader
+public static class EnvironmentReader
 {
     public static T Read<T>(string varName, T defaultValue = default, string varEmptyError = null)
         where T : IComparable, IConvertible, IComparable<T>, IEquatable<T>
