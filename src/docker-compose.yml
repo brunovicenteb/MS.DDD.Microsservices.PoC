@@ -6,8 +6,10 @@ services:
     restart: always
     image: rabbitmq:management
     ports:
-      - "15672:15672"
-      - "5672:5672"
+      - "16725:15672"
+      - "6725:6725"
+    environment:
+      - RABBITMQ_NODE_PORT=6725  
     networks:
       - benefit-compose-network
 
@@ -74,7 +76,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - RABBIT_MQ=amqp://guest:guest@rabbit:5672
+      - RABBIT_MQ=amqp://guest:guest@rabbit:6725
       - DATABASE_TYPE=Postgres
       - DATABASE_CONNECTION=Host=postgres;Database=Benefit;Port=5432;Username=guest;Password=guest
       - TELEMETRY_HOST=jaeger
@@ -98,7 +100,7 @@ services:
       - jaeger      
       - postgres
     environment:
-      - RABBIT_MQ=amqp://guest:guest@rabbit:5672
+      - RABBIT_MQ=amqp://guest:guest@rabbit:6725
       - DATABASE_TYPE=Postgres
       - DATABASE_CONNECTION=Host=postgres;Database=Benefit;Port=5432;Username=guest;Password=guest
       - TELEMETRY_HOST=jaeger
