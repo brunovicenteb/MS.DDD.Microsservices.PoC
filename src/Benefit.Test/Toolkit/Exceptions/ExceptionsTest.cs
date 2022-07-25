@@ -3,23 +3,21 @@ using System.Collections.Generic;
 using Toolkit.Exceptions;
 using Xunit;
 
-namespace Benefit.Test.Toolkit.Exceptions
+namespace Benefit.Test.Toolkit.Exceptions;
+public class ExceptionsTest
 {
-    public class ExceptionsTest
+    [Theory]
+    [ClassData(typeof(ExceptionsMock))]
+    public void GetCustomExceptionTest(BaseException exception)
     {
-        [Theory]
-        [ClassData(typeof(ExceptionsMock))]
-        public void getCustomExceptionTest(BaseException exception)
-        {
-            //arrange
-            //act
-            var excetionType = exception.GetType();
-            var excetionName = exception.Message;
+        //arrange
+        //act
+        var excetionType = exception.GetType();
+        var excetionName = exception.Message;
 
-            //assert
-            Assert.Equal(typeof(Exception), excetionType.BaseType.BaseType);
-            Assert.IsType(excetionType, exception);
-            Assert.Equal(excetionName, excetionType.Name);
-        }
+        //assert
+        Assert.Equal(typeof(Exception), excetionType.BaseType.BaseType);
+        Assert.IsType(excetionType, exception);
+        Assert.Equal(excetionName, excetionType.Name);
     }
 }

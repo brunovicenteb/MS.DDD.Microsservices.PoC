@@ -1,7 +1,6 @@
 ﻿using Toolkit;
 
 namespace Benefit.Test.Toolkit;
-
 public class EnvironmentReaderTest
 {
     [Theory]
