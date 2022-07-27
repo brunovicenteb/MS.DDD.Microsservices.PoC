@@ -19,6 +19,6 @@ public class ExceptionsTest
         Assert.Equal(typeof(BaseException), excetionType.BaseType);
         Assert.Equal(typeof(Exception), excetionType.BaseType.BaseType);
         Assert.IsType(excetionType, exception);
-        Assert.True(excetionName.Contains(excetionType.Name));
+        Assert.Contains(excetionType.Name, excetionName);
     }
 }
