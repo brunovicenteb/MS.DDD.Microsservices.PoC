@@ -6,7 +6,7 @@ public static class MapperFactory
 {
     public static IGenericMapper Map<TSource, TDestination>()
     {
-        return new GenericMapper<TSource, TDestination>();
+        return Nest<TSource, TDestination>() as IGenericMapper;
     }
     public static INestedMapper Nest<TSource, TDestination>()
     {
