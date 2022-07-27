@@ -1,8 +1,11 @@
-﻿using Benefit.Test.Toolkit.MessageBroker.Mock.Sagas;
+﻿using Benefit.Test.Toolkit.MessageBroker.Mock.Infra;
+using Benefit.Test.Toolkit.MessageBroker.Mock.Sagas;
 using Benefit.Test.Toolkit.MessageBroker.Mock.Sagas.Contract;
+using Benefit.Test.Toolkit.MessageBroker.Mock.Sagas.Workers;
 using MassTransit;
 using MassTransit.EntityFrameworkCoreIntegration;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using Toolkit.TransactionalOutBox;
@@ -28,13 +31,65 @@ public class ObjectContextMock : OutBoxDbContext
 
     public override void RegisterConsumers(IServiceCollection services, IBusRegistrationConfigurator busRegistration)
     {
-        //busRegistration.AddConsumer<BeneficiaryNotifyFinishConsumer>();
-        //busRegistration.AddConsumer<BeneficiaryNotifyFinishConsumer>();
-        //busRegistration.AddSagaStateMachine<ObjectStateMachineMock, ObjectStateMock, ObjectStateDefinitionMock>()
-        //    .EntityFrameworkRepository(r =>
-        //    {
-        //        r.ExistingDbContext<ObjectContextMock>();
-        //            r.Use();
-        //    });
+        base.RegisterConsumers(services, busRegistration);
+        services.AddScoped<IObjectRepositoryMock, ObjectRepositoryMock>();
+        busRegistration.AddConsumer<ObjectCreatedConsumerMock>();
+        busRegistration
+            .AddMassTransitTestHarness(x =>
+            {
+                x.AddSagaStateMachine<ObjectStateMachineMock, ObjectStateMock, ObjectStateDefinitionMock>()
+                .EntityFrameworkRepository(r =>
+                {
+                    r.ExistingDbContext<ObjectContextMock>();
+                    r.UsePostgres();
+                });
+
+                x.UsingInMemory((context, cfg) =>
+                {
+                    cfg.ConfigureEndpoints(context);
+                });
+            });
+    }
+
+    protected override void DoModelCreating(ModelBuilder modelBuilder)
+    {
+        base.DoModelCreating(modelBuilder);
+        MapObjectMock(modelBuilder);
+    }
+
+    private void MapObjectMock(ModelBuilder modelBuilder)
+    {
+        var registration = modelBuilder.Entity<ObjectMock>();
+        registration.HasKey(e => e.ID);
+        registration.Property(e => e.Name)
+                .HasMaxLength(50)
+                .IsRequired();
+        registration.Property(e => e.CreateAt)
+                .IsRequired();
+
+        if (DbType == DatabaseType.SqlServer)
+            DoModelCreateSqlServer(registration);
+        else
+            DoModelCreatePostgress(modelBuilder, registration);
+    }
+
+    private void DoModelCreateSqlServer(EntityTypeBuilder<ObjectMock> registration)
+    {
+        registration.Property(e => e.CreateAt)
+            .HasDefaultValueSql("getutcdate()");
+    }
+
+    private void DoModelCreatePostgress(ModelBuilder modelBuilder, EntityTypeBuilder<ObjectMock> registration)
+    {
+        modelBuilder.HasDefaultSchema("public");
+        registration.Property(e => e.CreateAt)
+            .HasColumnType("timestamp with time zone")
+            .HasDefaultValueSql("NOW()")
+            .ValueGeneratedOnAdd()
+            .IsRequired();
+        registration.Property(e => e.UpdateAt)
+            .HasColumnType("timestamp with time zone")
+            .HasDefaultValueSql("NOW()")
+            .ValueGeneratedOnUpdate();
     }
 }

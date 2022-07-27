@@ -1,4 +1,5 @@
-﻿using Benefit.Test.Toolkit.MessageBroker.Mock.Sagas.Contract.States;
+﻿using Benefit.Test.Toolkit.MessageBroker.Mock.Infra;
+using Benefit.Test.Toolkit.MessageBroker.Mock.Sagas.Contract.States;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
@@ -7,34 +8,26 @@ using Toolkit.Mapper;
 using Toolkit.MessageBroker;
 
 namespace Benefit.Test.Toolkit.MessageBroker.Mock.Sagas.Workers;
-/*public class ObjectCreatedConsumerMock : BrokerConsumer<ObjectCreatedMock>
+public class ObjectCreatedConsumerMock : BrokerConsumer<ObjectCreatedMock>
 {
-    public ObjectCreatedConsumerMock(IPublishEndpoint publisher, ILogger<ObjectCreatedConsumerMock> logger)
+    public ObjectCreatedConsumerMock(IPublishEndpoint publisher, ILogger<ObjectCreatedConsumerMock> logger, IObjectRepositoryMock objectRepository)
     {
         _Publisher = publisher;
         _Logger = logger;
-        _Mapper = MapperFactory.Map<BeneficiaryRegistered, BeneficiaryImdbIntegrated>();
+        _Mapper = MapperFactory.Map<ObjectCreatedMock, ObjectNotifyFinishedMock>();
     }
 
     private readonly ILogger _Logger;
     private readonly IPublishEndpoint _Publisher;
+    private readonly IObjectRepositoryMock _ObjectRepository;
     private readonly IGenericMapper _Mapper;
 
     protected override ILogger Logger => _Logger;
 
-    protected override async Task ConsumeAsync(BeneficiaryRegistered message)
+    protected override async Task ConsumeAsync(ObjectCreatedMock message)
     {
-        if (message == null)
-            throw new ArgumentNullException(nameof(message));
-        var benefit = await _BenefitRepository.GetByCPF(message.CPF);
-        if (benefit == null)
-            throw new NotFoundException($"No beneficiary found with CPF=\"{message.CPF}\".");
-        var apiResponse = await TryExecute(async () => await _ApiClient.GetPerson(BenefitContext.ImdbKey, benefit.Name),
-            $"Unable to consume Imdb API for beneficiary \"{benefit.Name}\" even after five attempts.");
-        if (apiResponse != null)
-            await SaveImdbWorks(benefit, apiResponse);
-        var evt = _Mapper.Map<BeneficiaryRegistered, BeneficiaryImdbIntegrated>(message);
+        var evt = _Mapper.Map<ObjectCreatedMock, ObjectNotifyFinishedMock>(message);
         await _Publisher.Publish(evt);
-        await _BenefitRepository.SaveChangesAsync();
+        await _ObjectRepository.SaveChangesAsync();
     }
-}*/
+}
