@@ -35,20 +35,7 @@ public class ObjectContextMock : OutBoxDbContext
         services.AddScoped<IObjectRepositoryMock, ObjectRepositoryMock>();
         busRegistration.AddConsumer<ObjectCreatedConsumerMock>();
         busRegistration
-            .AddMassTransitTestHarness(x =>
-            {
-                x.AddSagaStateMachine<ObjectStateMachineMock, ObjectStateMock, ObjectStateDefinitionMock>()
-                .EntityFrameworkRepository(r =>
-                {
-                    r.ExistingDbContext<ObjectContextMock>();
-                    r.UsePostgres();
-                });
-
-                x.UsingInMemory((context, cfg) =>
-                {
-                    cfg.ConfigureEndpoints(context);
-                });
-            });
+            .AddSagaStateMachine<ObjectStateMachineMock, ObjectStateMock, ObjectStateDefinitionMock>().InMemoryRepository();
     }
 
     protected override void DoModelCreating(ModelBuilder modelBuilder)

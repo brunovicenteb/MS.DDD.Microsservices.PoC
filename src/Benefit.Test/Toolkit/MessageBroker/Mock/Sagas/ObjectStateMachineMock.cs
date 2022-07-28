@@ -34,7 +34,7 @@ public class ObjectStateMachineMock : MassTransitStateMachine<ObjectStateMock>
     }
 
     public State SubmittedState { get; private set; }
-    //public State ObjectCreatedState { get; private set; }
+    public State ObjectCreatedState { get; private set; }
     public Event<ObjectSubmittedMock> SubmitObjectEvent { get; } = null!;
     public Event<ObjectCreatedMock> CreatedObjectEvent { get; } = null!;
     public Event<ObjectNotifyFinishedMock> NotifyFinishedEvent { get; } = null!;

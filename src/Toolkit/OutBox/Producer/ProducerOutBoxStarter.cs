@@ -53,6 +53,22 @@ internal class ProducerOutBoxStarter<T> : OutBoxStarter where T : OutBoxDbContex
         });
     }
 
+    protected override void DoUseHarness()
+    {
+        Builder.Services.AddMassTransitTestHarness(busRegistration =>
+        {
+            busRegistration.AddEntityFrameworkOutbox<T>(o =>
+            {
+                o.QueryDelay = TimeSpan.FromSeconds(1);
+                if (OutBoxDbContext.DbType == DatabaseType.SqlServer)
+                    o.UseSqlServer();
+                else
+                    o.UsePostgres();
+                o.UseBusOutbox();
+            });
+        });
+    }
+
     private void UsePostgress(string stringConnection, DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseNpgsql(stringConnection, options =>

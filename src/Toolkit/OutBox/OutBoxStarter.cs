@@ -29,6 +29,7 @@ internal abstract class OutBoxStarter : ILogable, ITelemetreable, IDatabaseable,
     protected abstract void DoUseDatabase(string stringConnection);
 
     protected abstract void DoUseRabbitMq(string host);
+    protected abstract void DoUseHarness();
 
     public IBrokeable UseDatabase()
     {
@@ -50,6 +51,11 @@ internal abstract class OutBoxStarter : ILogable, ITelemetreable, IDatabaseable,
         var host = EnvironmentReader.Read<string>(rabbitMqVariableName, varEmptyError:
             $"Unable to identify RabbitMq Host on {rabbitMqVariableName} variable. Unable to start Transactional OutBox.");
         DoUseRabbitMq(host);
+    }
+
+    public void UseHarness()
+    {
+        DoUseHarness();
     }
 
     public ITelemetreable UseSerilog()
@@ -98,6 +104,11 @@ internal abstract class OutBoxStarter : ILogable, ITelemetreable, IDatabaseable,
     }
 
     public IDatabaseable DoNotUseTelemetry()
+    {
+        return this;
+    }
+
+    public IBrokeable DoNotUseDatabase()
     {
         return this;
     }

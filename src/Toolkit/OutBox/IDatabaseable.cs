@@ -5,4 +5,5 @@ namespace Toolkit.OutBox;
 public interface IDatabaseable
 {
     public IBrokeable UseDatabase();
+    public IBrokeable DoNotUseDatabase();
 }
