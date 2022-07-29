@@ -47,6 +47,48 @@ public class EnvironmentReaderTest
     [Theory]
     [InlineData("Ping")]
     [InlineData("Pong")]
+    public void TestReadStringVariableSucessWithValueEqualsDefault(string varValue)
+    {
+        var varName = nameof(TestReadStringVariableSucessWithDefaultValue);
+        try
+        {
+            //arrange
+            Environment.SetEnvironmentVariable(varName, varValue);
+            //act
+            string value = EnvironmentReader.Read<string>(varName, varValue);
+            //assert
+            Assert.Equal(varValue, value);
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable(varName, null);
+        }
+    }
+
+    [Theory]
+    [InlineData(1080)]
+    [InlineData(7216)]
+    public void TestReadIntVariableSucessWithValueEqualsDefault(int varValue)
+    {
+        var varName = nameof(TestReadStringVariableSucessWithDefaultValue);
+        try
+        {
+            //arrange
+            Environment.SetEnvironmentVariable(varName, varValue.ToString());
+            //act
+            var value = EnvironmentReader.Read<int>(varName, varValue);
+            //assert
+            Assert.Equal(varValue, value);
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable(varName, null);
+        }
+    }
+
+    [Theory]
+    [InlineData("Ping")]
+    [InlineData("Pong")]
     public void TestReadStringVariableSucess(string varValue)
     {
         var varName = nameof(TestReadStringVariableSucessWithDefaultValue);

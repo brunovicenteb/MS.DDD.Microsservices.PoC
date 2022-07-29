@@ -3,16 +3,14 @@ using Toolkit.Interfaces;
 
 namespace Toolkit.Mapper;
 
-internal class NestedMapper : INestedMapper, IGenericMapper
+internal class NestedMapper : IGenericMapper, INestedMapper
 {
     private AutoMapper.Mapper _Mapper;
     private MapperConfigurationExpression _Expression;
 
     public TDestination Map<TSource, TDestination>(TSource source)
     {
-        if (_Expression == null)
-            CreateExpression<TSource, TDestination>();
-        CreateMap<TSource, TDestination>();
+        CreateMap();
         return _Mapper.Map<TDestination>(source);
     }
 
@@ -23,7 +21,6 @@ internal class NestedMapper : INestedMapper, IGenericMapper
 
     public INestedMapper Nest<TSource, TDestination>()
     {
-        _Mapper = null;
         CreateExpression<TSource, TDestination>();
         return this;
     }
@@ -35,7 +32,7 @@ internal class NestedMapper : INestedMapper, IGenericMapper
         _Expression.CreateMap<TSource, TDestination>();
     }
 
-    private void CreateMap<TSource, TDestination>()
+    private void CreateMap()
     {
         if (_Mapper != null)
             return;

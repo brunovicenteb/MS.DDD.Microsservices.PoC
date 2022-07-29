@@ -6,8 +6,8 @@ services:
     restart: always
     image: rabbitmq:management
     ports:
-      - "15672:15672"
-      - "5672:5672"
+      - "14789:15672"
+      - "8475:5672"
     networks:
       - benefit-compose-network
 
@@ -16,7 +16,7 @@ services:
     restart: always
     image: postgres
     ports:
-      - "5432:5432"
+      - "9571:5432"
     environment:
       - POSTGRES_USER=guest      
       - POSTGRES_PASSWORD=guest
