@@ -43,6 +43,54 @@ public class BenefitContext : OutBoxDbContext
         get { yield return new BeneficiaryStateMap(); }
     }
 
+    //public override void RegisterConsumers(IServiceCollection services, IBusRegistrationConfigurator busRegistration)
+    //{
+    //    base.RegisterConsumers(services, busRegistration);
+    //    //services.AddScoped<IObjectRepositoryMock, ObjectRepositoryMock>();
+    //    //busRegistration.AddConsumer<ObjectCreatedConsumerMock>();
+
+    //    services.AddScoped<IBenefitRepository, BenefitRepository>();
+    //    _ImdbKey = Environment.GetEnvironmentVariable(_ImdbKeyVariableName);
+    //    services.AddRefitClient<IImdbApiClient>()
+    //        .ConfigureHttpClient(c => c.BaseAddress = new Uri(_ImdbUrlApi));
+    //    services.AddRefitClient<ITheAudioDbApiClient>()
+    //        .ConfigureHttpClient(c => c.BaseAddress = new Uri(_TheAudioDbUrlApi));
+    //    busRegistration.AddConsumer<BenefiteImdbConsumer>();
+    //    busRegistration.AddConsumer<BeneficiaryTheAudioDbConsumer>();
+    //    busRegistration.AddConsumer<BeneficiaryNotifyFinishConsumer>();
+
+    //    busRegistration
+    //        .AddSagaStateMachine<BeneficiaryStateMachine, BeneficiaryState>(sagaConfig =>
+    //        {
+    //            sagaConfig.UseInMemoryOutbox();
+    //        })
+    //        .InMemoryRepository();
+    //}
+
+
+    //public override void RegisterConsumers(IServiceCollection services, IBusRegistrationConfigurator busRegistration)
+    //{
+    //    base.RegisterConsumers(services, busRegistration);
+    //    services.AddScoped<IBenefitRepository, BenefitRepository>();
+    //    _ImdbKey = Environment.GetEnvironmentVariable(_ImdbKeyVariableName);
+    //    services.AddRefitClient<IImdbApiClient>()
+    //        .ConfigureHttpClient(c => c.BaseAddress = new Uri(_ImdbUrlApi));
+    //    services.AddRefitClient<ITheAudioDbApiClient>()
+    //        .ConfigureHttpClient(c => c.BaseAddress = new Uri(_TheAudioDbUrlApi));
+    //    busRegistration.AddConsumer<BenefiteImdbConsumer>();
+    //    busRegistration.AddConsumer<BeneficiaryTheAudioDbConsumer>();
+    //    busRegistration.AddConsumer<BeneficiaryNotifyFinishConsumer>();
+    //    busRegistration.AddSagaStateMachine<BeneficiaryStateMachine, BeneficiaryState, BeneficiaryStateDefinition>()
+    //        .EntityFrameworkRepository(r =>
+    //        {
+    //            r.ExistingDbContext<BenefitContext>();
+    //            if (DbType == DatabaseType.SqlServer)
+    //                r.UseSqlServer();
+    //            else
+    //                r.UsePostgres();
+    //        });
+    //}
+
     public override void RegisterConsumers(IServiceCollection services, IBusRegistrationConfigurator busRegistration)
     {
         base.RegisterConsumers(services, busRegistration);
@@ -55,8 +103,16 @@ public class BenefitContext : OutBoxDbContext
         busRegistration.AddConsumer<BenefiteImdbConsumer>();
         busRegistration.AddConsumer<BeneficiaryTheAudioDbConsumer>();
         busRegistration.AddConsumer<BeneficiaryNotifyFinishConsumer>();
-        busRegistration.AddSagaStateMachine<BeneficiaryStateMachine, BeneficiaryState, BeneficiaryStateDefinition>()
-            .EntityFrameworkRepository(r =>
+        var sagaStateMachine = busRegistration.AddSagaStateMachine<BeneficiaryStateMachine, BeneficiaryState, BeneficiaryStateDefinition>(cfg =>
+        {
+            if (DbType == DatabaseType.InMemory)
+                cfg.UseInMemoryOutbox();
+        });
+        if (DbType == DatabaseType.InMemory)
+            sagaStateMachine.InMemoryRepository();
+        else
+        {
+            sagaStateMachine.EntityFrameworkRepository(r =>
             {
                 r.ExistingDbContext<BenefitContext>();
                 if (DbType == DatabaseType.SqlServer)
@@ -64,6 +120,7 @@ public class BenefitContext : OutBoxDbContext
                 else
                     r.UsePostgres();
             });
+        }
     }
 
     protected override void DoModelCreating(ModelBuilder modelBuilder)

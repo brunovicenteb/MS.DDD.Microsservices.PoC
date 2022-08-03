@@ -14,6 +14,7 @@ public class ObjectCreatedConsumerMock : BrokerConsumer<ObjectCreatedMock>
     {
         _Publisher = publisher;
         _Logger = logger;
+        _ObjectRepository = objectRepository;
         _Mapper = MapperFactory.Map<ObjectCreatedMock, ObjectNotifyFinishedMock>();
     }
 
