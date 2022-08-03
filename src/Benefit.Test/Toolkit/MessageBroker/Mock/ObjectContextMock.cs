@@ -35,7 +35,11 @@ public class ObjectContextMock : OutBoxDbContext
         services.AddScoped<IObjectRepositoryMock, ObjectRepositoryMock>();
         busRegistration.AddConsumer<ObjectCreatedConsumerMock>();
         busRegistration
-            .AddSagaStateMachine<ObjectStateMachineMock, ObjectStateMock, ObjectStateDefinitionMock>().InMemoryRepository();
+            .AddSagaStateMachine<ObjectStateMachineMock, ObjectStateMock>(sagaConfig =>
+            {
+                sagaConfig.UseInMemoryOutbox();
+            })
+            .InMemoryRepository();
     }
 
     protected override void DoModelCreating(ModelBuilder modelBuilder)
