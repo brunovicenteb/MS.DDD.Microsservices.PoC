@@ -35,8 +35,7 @@ internal abstract class OutBoxStarter : ILogable, ITelemetreable, IDatabaseable,
     {
         var strDbType = EnvironmentReader.Read<string>(_DbTypeVarName, varEmptyError:
             $"Unable to identify DbType on {_DbTypeVarName} variable. Unable to start Transactional OutBox.");
-        DatabaseType dbType;
-        if (!Enum.TryParse(strDbType, out dbType))
+        if (!Enum.TryParse(strDbType, out DatabaseType dbType))
             throw new ArgumentNullException($"Invalid DbType ({strDbType}) informed on {_DbTypeVarName} variable. Unable to start Transactional OutBox.");
         OutBoxDbContext.SetDbType(dbType);
         var db = Enum.GetName(OutBoxDbContext.DbType);

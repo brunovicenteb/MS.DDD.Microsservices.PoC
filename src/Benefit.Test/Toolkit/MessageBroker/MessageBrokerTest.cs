@@ -28,7 +28,7 @@ public class MessageBrokerTest
         builder.BeginProducer<ObjectContextMock>()
             .UseSerilog()
             .UseTelemetry()
-            .DoNotUseDatabase()
+            .UseDatabase();
             /*.UseHarness()*/;
         builder.BeginConsumer<ObjectContextMock>()
             .UseSerilog()

@@ -48,7 +48,7 @@ public class ObjectContextMock : OutBoxDbContext
         MapObjectMock(modelBuilder);
     }
 
-    private void MapObjectMock(ModelBuilder modelBuilder)
+    private static void MapObjectMock(ModelBuilder modelBuilder)
     {
         var registration = modelBuilder.Entity<ObjectMock>();
         registration.HasKey(e => e.ID);
@@ -64,13 +64,13 @@ public class ObjectContextMock : OutBoxDbContext
             DoModelCreatePostgress(modelBuilder, registration);
     }
 
-    private void DoModelCreateSqlServer(EntityTypeBuilder<ObjectMock> registration)
+    private static void DoModelCreateSqlServer(EntityTypeBuilder<ObjectMock> registration)
     {
         registration.Property(e => e.CreateAt)
             .HasDefaultValueSql("getutcdate()");
     }
 
-    private void DoModelCreatePostgress(ModelBuilder modelBuilder, EntityTypeBuilder<ObjectMock> registration)
+    private static void DoModelCreatePostgress(ModelBuilder modelBuilder, EntityTypeBuilder<ObjectMock> registration)
     {
         modelBuilder.HasDefaultSchema("public");
         registration.Property(e => e.CreateAt)

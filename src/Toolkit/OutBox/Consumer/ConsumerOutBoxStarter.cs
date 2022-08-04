@@ -53,6 +53,10 @@ internal class ConsumerOutBoxStarter<T> : OutBoxStarter where T : OutBoxDbContex
     {
         Builder.Services.AddMassTransitTestHarness(busRegistration =>
         {
+            busRegistration.UsingInMemory((context, cfg) =>
+            {
+                cfg.ConfigureEndpoints(context);
+            });
             var context = new T();
             context.RegisterConsumers(Builder.Services, busRegistration);
         });
