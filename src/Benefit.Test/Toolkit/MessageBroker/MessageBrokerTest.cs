@@ -27,12 +27,12 @@ public class MessageBrokerTest
         var builder = WebApplication.CreateBuilder();
         builder.BeginProducer<ObjectContextMock>()
             .UseSerilog()
-            .UseTelemetry()
+            .DoNotUseTelemetry()
             .UseDatabase();
             /*.UseHarness()*/;
         builder.BeginConsumer<ObjectContextMock>()
             .UseSerilog()
-            .UseTelemetry()
+            .DoNotUseTelemetry()
             .DoNotUseDatabase()
             .UseHarness();
         //var builder = new ServiceCollection()
