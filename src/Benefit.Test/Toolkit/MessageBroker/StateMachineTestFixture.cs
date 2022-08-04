@@ -14,6 +14,11 @@ public class StateMachineTestFixtureFixture<TDbContext> : IDisposable
     {
         var dbType = DatabaseType.InMemory.ToString();
         Environment.SetEnvironmentVariable(dbType, dbType);
+        Environment.SetEnvironmentVariable("TELEMETRY_HOST", "jaeger");
+        Environment.SetEnvironmentVariable("JAEGER_AGENT_HOST", "jaeger");
+        Environment.SetEnvironmentVariable("JAEGER_AGENT_PORT", "6831");
+        Environment.SetEnvironmentVariable("JAEGER_SAMPLER_TYPE", "remote");
+        Environment.SetEnvironmentVariable("JAEGER_SAMPLING_ENDPOINT", "http://jaeger:5778/sampling");
         var builder = WebApplication.CreateBuilder();
         builder.BeginProducer<TDbContext>(dbTypeVarName: dbType)
             .UseSerilog()
@@ -41,7 +46,12 @@ public class StateMachineTestFixtureFixture<TDbContext> : IDisposable
     public async void Dispose()
     {
         var dbType = DatabaseType.InMemory.ToString();
-        Environment.SetEnvironmentVariable(dbType, dbType);
+        Environment.SetEnvironmentVariable(dbType, string.Empty);
+        Environment.SetEnvironmentVariable("TELEMETRY_HOST", string.Empty);
+        Environment.SetEnvironmentVariable("JAEGER_AGENT_HOST", string.Empty);
+        Environment.SetEnvironmentVariable("JAEGER_AGENT_PORT", string.Empty);
+        Environment.SetEnvironmentVariable("JAEGER_SAMPLER_TYPE", string.Empty);
+        Environment.SetEnvironmentVariable("JAEGER_SAMPLING_ENDPOINT", string.Empty);
         await TestHarness?.Stop();
         await Provider.DisposeAsync();
     }

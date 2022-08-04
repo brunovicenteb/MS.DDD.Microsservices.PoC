@@ -6,8 +6,9 @@ using Benefit.Domain.Interfaces;
 using Benefit.Service.Sagas.Beneficiary;
 using Microsoft.Extensions.DependencyInjection;
 using Benefit.Service.Sagas.Beneficiary.Contract;
+using Benefit.Test.Toolkit.MessageBroker;
 
-namespace Benefit.Test.Toolkit.MessageBroker;
+namespace Benefit.Test.Benefit;
 
 public class BeneficiarySagaTest : StateMachineTestFixture<BenefitContext, BeneficiaryStateMachine, BeneficiaryState>
 {
