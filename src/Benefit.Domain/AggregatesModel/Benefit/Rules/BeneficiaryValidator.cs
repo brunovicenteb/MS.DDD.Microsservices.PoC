@@ -1,5 +1,4 @@
 ﻿using Toolkit;
-using Benefit.Domain.Benefit;
 using FluentValidation;
 
 namespace Benefit.Domain.Benefit.Rules;

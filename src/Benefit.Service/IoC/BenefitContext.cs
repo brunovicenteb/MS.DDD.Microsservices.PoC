@@ -55,8 +55,16 @@ public class BenefitContext : OutBoxDbContext
         busRegistration.AddConsumer<BenefiteImdbConsumer>();
         busRegistration.AddConsumer<BeneficiaryTheAudioDbConsumer>();
         busRegistration.AddConsumer<BeneficiaryNotifyFinishConsumer>();
-        busRegistration.AddSagaStateMachine<BeneficiaryStateMachine, BeneficiaryState, BeneficiaryStateDefinition>()
-            .EntityFrameworkRepository(r =>
+        var sagaStateMachine = busRegistration.AddSagaStateMachine<BeneficiaryStateMachine, BeneficiaryState>(cfg =>
+        {
+            if (DbType == DatabaseType.InMemory)
+                cfg.UseInMemoryOutbox();
+        });
+        if (DbType == DatabaseType.InMemory)
+            sagaStateMachine.InMemoryRepository();
+        else
+        {
+            sagaStateMachine.EntityFrameworkRepository(r =>
             {
                 r.ExistingDbContext<BenefitContext>();
                 if (DbType == DatabaseType.SqlServer)
@@ -64,6 +72,7 @@ public class BenefitContext : OutBoxDbContext
                 else
                     r.UsePostgres();
             });
+        }
     }
 
     protected override void DoModelCreating(ModelBuilder modelBuilder)

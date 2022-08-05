@@ -21,7 +21,7 @@ public class StringTest
         Assert.Equal(expectedValue, result);
 
         if (result)
-            Assert.True(String.IsNullOrEmpty(valueForTest));
+            Assert.True(string.IsNullOrEmpty(valueForTest));
         else
             Assert.NotEmpty(valueForTest);
     }
@@ -45,7 +45,7 @@ public class StringTest
         if (result)
             Assert.NotEmpty(valueForTest);
         else
-            Assert.True(String.IsNullOrEmpty(valueForTest));
+            Assert.True(string.IsNullOrEmpty(valueForTest));
     }
 
     [Theory]

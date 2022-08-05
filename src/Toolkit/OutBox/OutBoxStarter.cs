@@ -29,13 +29,13 @@ internal abstract class OutBoxStarter : ILogable, ITelemetreable, IDatabaseable,
     protected abstract void DoUseDatabase(string stringConnection);
 
     protected abstract void DoUseRabbitMq(string host);
+    protected abstract void DoUseHarness();
 
     public IBrokeable UseDatabase()
     {
         var strDbType = EnvironmentReader.Read<string>(_DbTypeVarName, varEmptyError:
             $"Unable to identify DbType on {_DbTypeVarName} variable. Unable to start Transactional OutBox.");
-        DatabaseType dbType;
-        if (!Enum.TryParse(strDbType, out dbType))
+        if (!Enum.TryParse(strDbType, out DatabaseType dbType))
             throw new ArgumentNullException($"Invalid DbType ({strDbType}) informed on {_DbTypeVarName} variable. Unable to start Transactional OutBox.");
         OutBoxDbContext.SetDbType(dbType);
         var db = Enum.GetName(OutBoxDbContext.DbType);
@@ -50,6 +50,11 @@ internal abstract class OutBoxStarter : ILogable, ITelemetreable, IDatabaseable,
         var host = EnvironmentReader.Read<string>(rabbitMqVariableName, varEmptyError:
             $"Unable to identify RabbitMq Host on {rabbitMqVariableName} variable. Unable to start Transactional OutBox.");
         DoUseRabbitMq(host);
+    }
+
+    public void UseHarness()
+    {
+        DoUseHarness();
     }
 
     public ITelemetreable UseSerilog()
@@ -98,6 +103,11 @@ internal abstract class OutBoxStarter : ILogable, ITelemetreable, IDatabaseable,
     }
 
     public IDatabaseable DoNotUseTelemetry()
+    {
+        return this;
+    }
+
+    public IBrokeable DoNotUseDatabase()
     {
         return this;
     }

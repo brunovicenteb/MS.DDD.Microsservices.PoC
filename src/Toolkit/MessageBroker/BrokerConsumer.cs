@@ -17,7 +17,7 @@ public abstract class BrokerConsumer<T> : IBrokerConsumer<T> where T : class
         await ConsumeAsync(context.Message);
     }
 
-    protected async Task<TResult> TryExecute<TResult>(Func<Task<TResult>> action, string failMessage = null, int retryCount = 5, double intevalInMilliseconds = 100)
+    protected async Task<TResult> TryExecute<TResult>(Func<Task<TResult>> action, string failMessage = null, int retryCount = 0, double intevalInMilliseconds = 100)
         where TResult : class
     {
         try
