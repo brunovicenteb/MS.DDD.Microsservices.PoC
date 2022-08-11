@@ -30,10 +30,28 @@ Este repositório contem os projetos de dominio, Workers, API e infraestrutura d
     <td></td>
   </tr>    
   <tr>
-    <td><img align="center" alt="Rafa-Csharp" height="30" width="40" src="https://icongr.am/devicon/github-original.svg?size=40"></td>
+    <td><img align="center" alt="Rafa-Csharp" height="30" width="40" src="https://icongr.am/devicon/git-original.svg?size=40"></td>
     <td>Git</td>
     <td>lasted</td>
     <td><a href="https://docs.github.com/pt/get-started/quickstart/github-flow">Github Flow</a></td>    
+  </tr>  
+  <tr>
+    <td><img align="center" alt="Rafa-Csharp" height="30" width="40" src="https://icongr.am/devicon/postgresql-original.svg?size=40"></td>
+    <td><a href="https://www.postgresql.org/">Postgres</a></td>
+    <td>lasted</td>
+    <td></td>    
+  </tr> 
+  <tr>
+    <td><img align="center" alt="Rafa-Csharp" height="30" width="40" src="https://icongr.am/devicon/docker-original.svg?size=40"></td>
+    <td><a href="https://www.docker.com/">Docker</a></td>
+    <td>lasted</td>
+    <td><a href="https://docs.docker.com/compose">Docker Compose</a></td>    
+  </tr>
+  <tr>
+    <td></td>
+    <td><a href="https://www.rabbitmq.com/">RabbitMQ</a></td>
+    <td>lasted</td>
+    <td></td>    
   </tr>  
 </table>
 
