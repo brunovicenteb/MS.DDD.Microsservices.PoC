@@ -52,6 +52,12 @@ Este repositório contem os projetos de dominio, Workers, API e infraestrutura d
     <td><a href="https://www.rabbitmq.com/">RabbitMQ</a></td>
     <td>lasted</td>
     <td></td>    
+  </tr>
+  <tr>
+    <td><img align="center" alt="Rafa-Csharp" height="30" width="40" src="https://icongr.am/devicon/mongodb-original.svg?size=40"></td>
+    <td><a href="https://www.mongodb.com/">MongoDB</a></td>
+    <td>lasted</td>
+    <td></td>
   </tr>  
 </table>
 
