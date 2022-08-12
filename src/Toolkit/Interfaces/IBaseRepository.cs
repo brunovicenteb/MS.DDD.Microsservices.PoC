@@ -9,6 +9,6 @@ public interface IBaseRepository<TEntity> where TEntity : BaseEntity
     Task<TEntity> UpdateAsync(TEntity entity, bool applySave = true);
     Task<bool> DeleteAsync(int id, bool applySave = true);
     Task<TEntity> GetObjectByIDAsync(int id);
-    Task<IEnumerable<TEntity>> GetAsync(int limit, int start);
+    Task<IEnumerable<TEntity>> GetAsync(int limit = 50, int start = 0);
     Task<bool> SaveChangesAsync();
 }

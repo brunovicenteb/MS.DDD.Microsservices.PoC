@@ -1,10 +1,27 @@
 ﻿using MassTransit;
-using MassTransit.RetryPolicies;
 using Microsoft.Extensions.Logging;
 
 namespace Toolkit.MessageBroker;
 
-public abstract class BrokerConsumer<T> : IBrokerConsumer<T> where T : class
+public abstract class BrokerConsumer
+{
+    private static int _RetryCount = 5;
+    private static int _RetryIntevalInMilliseconds = 100;
+
+    public static void SetRetryParameters(int retryCount, int retryIntevalInMilliseconds)
+    {
+        _RetryCount = retryCount;
+        _RetryIntevalInMilliseconds = retryIntevalInMilliseconds;
+    }
+
+    protected virtual int RetryCount
+        => _RetryCount;
+
+    protected virtual int RetryIntevalInMilliseconds
+        => _RetryIntevalInMilliseconds;
+}
+
+public abstract class BrokerConsumer<T> : BrokerConsumer, IBrokerConsumer<T> where T : class
 {
     protected abstract Task ConsumeAsync(T message);
 
@@ -17,23 +34,9 @@ public abstract class BrokerConsumer<T> : IBrokerConsumer<T> where T : class
         await ConsumeAsync(context.Message);
     }
 
-    protected async Task<TResult> TryExecute<TResult>(Func<Task<TResult>> action, string failMessage = null, int retryCount = 0, double intevalInMilliseconds = 100)
+    protected async Task<TResult> TryExecute<TResult>(Func<Task<TResult>> action, string failMessage = null)
         where TResult : class
     {
-        try
-        {
-            var policy = Retry.Interval(retryCount, TimeSpan.FromMilliseconds(intevalInMilliseconds));
-            var result = await policy.Retry(async () =>
-            {
-                return await action();
-            });
-            return result;
-        }
-        catch (Exception ex)
-        {
-            if (failMessage.IsFilled())
-                Logger.LogError(ex, failMessage);
-        }
-        return default;
+        return await Resilience.TryExecute(action, Logger, failMessage, RetryCount, RetryIntevalInMilliseconds);
     }
 }

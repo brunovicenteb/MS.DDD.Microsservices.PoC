@@ -3,15 +3,15 @@ using System.Reflection;
 using Toolkit.TransactionalOutBox;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.InMemory;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Toolkit.OutBox.Producer;
 
 internal class ProducerOutBoxStarter<T> : OutBoxStarter where T : OutBoxDbContext
 {
-    internal ProducerOutBoxStarter(WebApplicationBuilder builder, string dbTypeVarName, bool recreateDb, string dbConnectionVarName)
-        : base(builder, dbTypeVarName, dbConnectionVarName)
+    internal ProducerOutBoxStarter(WebApplicationBuilder builder, string dbTypeVarName, bool recreateDb, string dbConnectionVarName,
+        string retryCountVarName, string retryIntevalInMillisecondsVarName)
+        : base(builder, dbTypeVarName, dbConnectionVarName, retryCountVarName, retryIntevalInMillisecondsVarName)
     {
         _RecreateDB = recreateDb;
     }

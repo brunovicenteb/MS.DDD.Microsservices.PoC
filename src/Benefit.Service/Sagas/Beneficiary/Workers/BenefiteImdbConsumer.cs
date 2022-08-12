@@ -41,8 +41,10 @@ public sealed class BenefiteImdbConsumer : BrokerConsumer<BeneficiaryRegistered>
         var benefit = await _BenefitRepository.GetByCPF(message.CPF);
         if (benefit == null)
             throw new NotFoundException($"No beneficiary found with CPF=\"{message.CPF}\".");
+        if (BenefitContext.ImdbKey.IsEmpty())
+            throw new NotSupportedException($"No ImdbKey exists on BenefiteImdbConsumer Context.");
         var apiResponse = await TryExecute(async () => await _ApiClient.GetPerson(BenefitContext.ImdbKey, benefit.Name),
-            $"Unable to consume Imdb API for beneficiary \"{benefit.Name}\" even after five attempts.");
+            $"Unable to consume Imdb API for beneficiary \"{benefit.Name}\" even after {RetryCount} attempts.");
         if (apiResponse != null)
             await SaveImdbWorks(benefit, apiResponse);
         var evt = _Mapper.Map<BeneficiaryRegistered, BeneficiaryImdbIntegrated>(message);
@@ -53,7 +55,7 @@ public sealed class BenefiteImdbConsumer : BrokerConsumer<BeneficiaryRegistered>
     private async Task<bool> SaveImdbWorks(Beneficiary benefit, ImdbResponse imdbPerson)
     {
         if (imdbPerson.errorMessage.IsFilled())
-            throw new DomainRuleException(imdbPerson.errorMessage);
+            throw new DomainRuleException($"Error on execute ImdbAp: {imdbPerson.errorMessage}");
         if (imdbPerson.results == null || imdbPerson.results.Count == 0)
         {
             _Logger.LogWarning($"No work found on Imdb Api for the name \"{benefit.Name}\".");

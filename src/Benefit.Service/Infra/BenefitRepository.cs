@@ -41,8 +41,8 @@ public sealed class BenefitRepository : RelationalDbRepository<BenefitContext, B
             return await Context.SaveChangesAsync() > 0;
         return true;
     }
-    
-    public override async Task<Beneficiary> GetObjectByIDAsync(int id)
+
+    public async Task<Beneficiary> GetFullBeneficiaryByIDAsync(int id)
     {
         return await Collection
             .Include(o => o.ImdbWorks)
@@ -51,7 +51,7 @@ public sealed class BenefitRepository : RelationalDbRepository<BenefitContext, B
             .FirstOrDefaultAsync(o => o.ID == id);
     }
 
-    public override async Task<IEnumerable<Beneficiary>> GetAsync(int limit, int start)
+    public async Task<IEnumerable<Beneficiary>> GetFullBeneficiaryAsync(int limit, int start)
     {
         return await Collection
             .Include(o => o.ImdbWorks)

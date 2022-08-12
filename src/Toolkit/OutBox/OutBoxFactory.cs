@@ -8,14 +8,18 @@ namespace Toolkit.OutBox;
 public static class OutBoxFactory
 {
     public static ILogable BeginProducer<T>(this WebApplicationBuilder builder,
-        bool recreateDb = false, string dbTypeVarName = "DATABASE_TYPE", string dbConnectionVarName = "DATABASE_CONNECTION") where T : OutBoxDbContext
+        bool recreateDb = false, string dbTypeVarName = "DATABASE_TYPE", string dbConnectionVarName = "DATABASE_CONNECTION",
+        string retryCountVarName = "RETRY_COUNT", string retryIntevalInMillisecondsVarName = "RETRY_INTERVAL_IN_MILLISECONDS")
+        where T : OutBoxDbContext
     {
-        return new ProducerOutBoxStarter<T>(builder, dbTypeVarName, recreateDb, dbConnectionVarName);
+        return new ProducerOutBoxStarter<T>(builder, dbTypeVarName, recreateDb, dbConnectionVarName, retryCountVarName, retryIntevalInMillisecondsVarName);
     }
 
     public static ILogable BeginConsumer<T>(this WebApplicationBuilder builder, string dbTypeVarName = "DATABASE_TYPE",
-        string dbConnectionVarName = "DATABASE_CONNECTION") where T : OutBoxDbContext, new()
+        string dbConnectionVarName = "DATABASE_CONNECTION", string retryCountVarName = "RETRY_COUNT",
+        string retryIntevalInMillisecondsVarName = "RETRY_INTERVAL_IN_MILLISECONDS")
+        where T : OutBoxDbContext, new()
     {
-        return new ConsumerOutBoxStarter<T>(builder, dbTypeVarName, dbConnectionVarName);
+        return new ConsumerOutBoxStarter<T>(builder, dbTypeVarName, dbConnectionVarName, retryCountVarName, retryIntevalInMillisecondsVarName);
     }
 }

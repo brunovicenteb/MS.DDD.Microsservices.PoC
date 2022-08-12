@@ -41,7 +41,7 @@ public sealed class BeneficiaryTheAudioDbConsumer : BrokerConsumer<BeneficiaryIm
         if (benefit == null)
             throw new NotFoundException($"No beneficiary found with CPF=\"{message.CPF}\".");
         var apiResponse = await TryExecute(async () => await _ApiClient.Search(benefit.Name),
-            $"Unable to consume TheAudioDb API for beneficiary \"{benefit.Name}\" even after five attempts.");
+            $"Unable to consume TheAudioDb API for beneficiary \"{benefit.Name}\" even after {RetryCount} attempts.");
         if (apiResponse != null)
             await SaveTheAudioDbWorks(benefit, apiResponse);
         await _BenefitRepository.UpdateAsync(benefit);

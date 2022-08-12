@@ -3,21 +3,25 @@ using OpenTelemetry;
 using Serilog.Events;
 using System.Diagnostics;
 using OpenTelemetry.Trace;
-using MassTransit.Metadata;
 using OpenTelemetry.Resources;
 using Toolkit.TransactionalOutBox;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Toolkit.MessageBroker;
 
 namespace Toolkit.OutBox;
 
 internal abstract class OutBoxStarter : ILogable, ITelemetreable, IDatabaseable, IBrokeable
 {
-    internal OutBoxStarter(WebApplicationBuilder builder, string dbTypeVarName, string dbConnectionVarName)
+    internal OutBoxStarter(WebApplicationBuilder builder, string dbTypeVarName, string dbConnectionVarName,
+        string retryCountVarName, string retryIntevalInMillisecondsVarName)
     {
         Builder = builder;
-        _DbConnectionVarName = dbConnectionVarName;
         _DbTypeVarName = dbTypeVarName;
+        _DbConnectionVarName = dbConnectionVarName;
+        int retryCount = EnvironmentReader.Read(retryCountVarName, defaultValue: 5);
+        int retryIntevalInMilliseconds = EnvironmentReader.Read(retryIntevalInMillisecondsVarName, defaultValue: 100);
+        BrokerConsumer.SetRetryParameters(retryCount, retryIntevalInMilliseconds);
     }
 
     protected readonly WebApplicationBuilder Builder;
