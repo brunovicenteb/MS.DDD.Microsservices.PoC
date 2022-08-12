@@ -8,8 +8,9 @@ namespace Toolkit.OutBox.Consumer;
 
 internal class ConsumerOutBoxStarter<T> : OutBoxStarter where T : OutBoxDbContext, new()
 {
-    internal ConsumerOutBoxStarter(WebApplicationBuilder builder, string dbTypeVarName, string dbConnectionVariableName)
-        : base(builder, dbTypeVarName, dbConnectionVariableName)
+    internal ConsumerOutBoxStarter(WebApplicationBuilder builder, string dbTypeVarName, string dbConnectionVarName,
+        string retryCountVarName, string retryIntevalInMillisecondsVarName)
+        : base(builder, dbTypeVarName, dbConnectionVarName, retryCountVarName, retryIntevalInMillisecondsVarName)
     {
     }
 

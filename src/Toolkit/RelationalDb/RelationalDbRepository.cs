@@ -30,18 +30,18 @@ public abstract class RelationalDbRepository<TContext, TEntity> : IBaseRepositor
         return await Context.SaveChangesAsync() == 1;
     }
 
-    public virtual async Task<TEntity> GetObjectByIDAsync(int id)
+    public async Task<TEntity> GetObjectByIDAsync(int id)
     {
         return await Collection
             .AsNoTracking()
             .FirstOrDefaultAsync(o => o.ID == id);
     }
 
-    public virtual async Task<IEnumerable<TEntity>> GetAsync(int limit, int start)
+    public async Task<IEnumerable<TEntity>> GetAsync(int limit, int start)
     {
         return await Collection
-            .Skip(limit)
-            .Take(start)
+            .Skip(start)
+            .Take(limit)
             .OrderBy(o => o.ID)
             .AsNoTracking()
             .ToListAsync();

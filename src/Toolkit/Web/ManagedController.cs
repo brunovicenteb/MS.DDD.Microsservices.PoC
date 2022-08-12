@@ -1,13 +1,12 @@
 using Serilog;
 using Toolkit.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace Toolkit.Web;
 
 public abstract class ManagedController : ControllerBase
 {
-    private const int _InternalServerError = 500;
-
     protected async Task<IActionResult> TryExecuteOK(Func<Task<object>> pExecute)
     {
         Func<object, IActionResult> action = delegate (object result)
@@ -22,7 +21,7 @@ public abstract class ManagedController : ControllerBase
         Func<object, IActionResult> action = delegate (object result)
         {
             bool sucess = (bool)result;
-            return sucess ? NoContent() : NotFound();
+            return new ObjectResult(null) { StatusCode = sucess ? (int)HttpStatusCode.NoContent : (int)HttpStatusCode.NotFound };
         };
         return await TryExecute(action, pExecute);
     }
@@ -40,7 +39,7 @@ public abstract class ManagedController : ControllerBase
         }
         catch (ForbidException ex)
         {
-            return Forbid(ex.Message);
+            return new ObjectResult(ex.Message) { StatusCode = (int)HttpStatusCode.Forbidden };
         }
         catch (UnauthorizedException ex)
         {
@@ -57,7 +56,7 @@ public abstract class ManagedController : ControllerBase
         catch (Exception ex)
         {
             Log.Logger.Error(ex, "Unhandled error in running the Api.");
-            return StatusCode(_InternalServerError);
+            return new ObjectResult(ex.Message) { StatusCode = (int)HttpStatusCode.InternalServerError };
         }
     }
 }

@@ -2,7 +2,7 @@ name: Build-Tests
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, feature/Improve-Tests ]
   pull_request:
     branches: [ main ]
   workflow_dispatch:
@@ -37,6 +37,8 @@ jobs:
       run: dotnet build ${{ env.PROJECT_PATH }} --no-restore
 
     - name: MSTest+Coverlet
+      env:
+        IMDB_API_KEY: ${{ secrets.IMDB_API_KEY }}
       run: dotnet test ${{ env.TESTS_PROJECT_PATH }} --logger:"html;LogFileName=resultado-testes.html" --collect:"XPlat Code Coverage"
 
     - name: Install ReportGenerator
