@@ -1,0 +1,43 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: movimentacao-consumer
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: movimentacao-consumer
+  template:
+    metadata:
+      labels:
+        app: movimentacao-consumer
+    spec:
+      containers:
+      - name: movimentacao-consumer
+        image: brunovicenteb/benefitconsumerworker:1.1
+        ports:
+        - containerPort: 80
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Development"
+        - name: ASPNETCORE_URLS
+          value: "http://+:80"
+        - name: RABBIT_MQ
+          value: "amqp://guest:guest@movimentacao-rabbit-mq:5672"
+        - name: DATABASE_TYPE
+          value: "Postgres"
+        - name: DATABASE_CONNECTION
+          value: "Host=movimentacao-postgres;Database=Benefit;Port=5432;Username=guest;Password=guest"
+        - name: TELEMETRY_HOST
+          value: "jaeger"
+        - name: JAEGER_AGENT_HOST
+          value: "jaeger"
+        - name: JAEGER_AGENT_PORT
+          value: "6831"
+        - name: JAEGER_SAMPLER_TYPE
+          value: "remote"
+        - name: JAEGER_SAMPLING_ENDPOINT
+          value: "http://jaeger:5778/sampling"
+        - name: IMDB_API_KEY
+          value: "k_948wt5ti"

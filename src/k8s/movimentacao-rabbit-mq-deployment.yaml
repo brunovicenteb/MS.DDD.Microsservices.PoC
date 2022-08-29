@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: movimentacao-rabbit-mq
+spec:
+  serviceName: movimentacao-rabbit-mq
+  selector:
+    matchLabels:
+      app: movimentacao-rabbit-mq
+  template:
+    metadata:
+      labels:
+        app: movimentacao-rabbit-mq
+    spec:
+      containers:
+        - name: movimentacao-rabbit-mq
+          image: rabbitmq:management
+          ports:
+            - name: http
+              protocol: TCP
+              containerPort: 15672
+            - name: amqp
+              protocol: TCP
+              containerPort: 5672
+          livenessProbe:
+            exec:
+              command:
+                - "rabbitmq-diagnostics"
+                - "ping"
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 15
+          readinessProbe:
+            exec:
+              command:
+                - "rabbitmq-diagnostics"
+                - "check_port_connectivity"
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 15

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: movimentacao-rabbit-mq
+  labels:
+    app: movimentacao-rabbit-mq
+spec:
+  type: NodePort
+  ports:
+    - port: 5672
+  selector:
+    app: movimentacao-rabbit-mq

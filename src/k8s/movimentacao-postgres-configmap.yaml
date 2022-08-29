@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-secret
+  labels:
+    app: movimentacao-postgres
+data:
+  POSTGRES_DB: Benefit
+  POSTGRES_USER: guest
+  POSTGRES_PASSWORD: guest

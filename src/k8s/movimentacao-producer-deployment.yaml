@@ -1,0 +1,41 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: movimentacao-producer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: movimentacao-producer
+  template:
+    metadata:
+      labels:
+        app: movimentacao-producer
+    spec:
+      containers:
+      - name: movimentacao-producer
+        image: brunovicenteb/benefitapi:1.1
+        ports:
+        - containerPort: 80
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Development"
+        - name: ASPNETCORE_URLS
+          value: "http://+:80"
+        - name: RABBIT_MQ
+          value: "amqp://guest:guest@movimentacao-rabbit-mq:5672"
+        - name: DATABASE_TYPE
+          value: "Postgres"
+        - name: DATABASE_CONNECTION
+          value: "Host=movimentacao-postgres;Database=Benefit;Port=5432;Username=guest;Password=guest"
+        - name: TELEMETRY_HOST
+          value: "jaeger"
+        - name: JAEGER_AGENT_HOST
+          value: "jaeger"
+        - name: JAEGER_AGENT_PORT
+          value: "6831"
+        - name: JAEGER_SAMPLER_TYPE
+          value: "remote"
+        - name: JAEGER_SAMPLING_ENDPOINT
+          value: "http://jaeger:5778/sampling"
