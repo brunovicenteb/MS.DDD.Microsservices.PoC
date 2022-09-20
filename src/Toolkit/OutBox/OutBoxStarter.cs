@@ -3,15 +3,16 @@ using OpenTelemetry;
 using Serilog.Events;
 using System.Diagnostics;
 using OpenTelemetry.Trace;
+using Toolkit.MessageBroker;
 using OpenTelemetry.Resources;
 using Toolkit.TransactionalOutBox;
 using Microsoft.AspNetCore.Builder;
+using Toolkit.Authentication.OktaUtils;
 using Microsoft.Extensions.DependencyInjection;
-using Toolkit.MessageBroker;
 
 namespace Toolkit.OutBox;
 
-internal abstract class OutBoxStarter : ILogable, ITelemetreable, IDatabaseable, IBrokeable
+internal abstract class OutBoxStarter : ILogable, ITelemetreable, IDatabaseable, IBrokeable, IAuthenticable
 {
     internal OutBoxStarter(WebApplicationBuilder builder, string dbTypeVarName, string dbConnectionVarName,
         string retryCountVarName, string retryIntevalInMillisecondsVarName)
@@ -49,16 +50,18 @@ internal abstract class OutBoxStarter : ILogable, ITelemetreable, IDatabaseable,
         return this;
     }
 
-    public void UseRabbitMq(string rabbitMqVariableName = "RABBIT_MQ")
+    public IAuthenticable UseRabbitMq(string rabbitMqVariableName = "RABBIT_MQ")
     {
         var host = EnvironmentReader.Read<string>(rabbitMqVariableName, varEmptyError:
             $"Unable to identify RabbitMq Host on {rabbitMqVariableName} variable. Unable to start Transactional OutBox.");
         DoUseRabbitMq(host);
+        return this;
     }
 
-    public void UseHarness()
+    public IAuthenticable UseHarness()
     {
         DoUseHarness();
+        return this;
     }
 
     public ITelemetreable UseSerilog()
@@ -114,5 +117,26 @@ internal abstract class OutBoxStarter : ILogable, ITelemetreable, IDatabaseable,
     public IBrokeable DoNotUseDatabase()
     {
         return this;
+    }
+
+    public void UseOkta(string clientIdVarName = "OKTA_CLIENT_ID", string clienteSecretVarName = "OKTA_SECRET",
+        string domainVarName = "OKTA_DOMAIN", string autorizationServerIdVarName = "OKTA_SERVER_ID",
+        string audienceVarName = "OKTA_AUDIENCE")
+    {
+        var clientId = EnvironmentReader.Read<string>(clientIdVarName, varEmptyError:
+            $"Unable to identify OktaClientId on {clientIdVarName} variable. Unable to start Transactional OutBox.");
+        var secret = EnvironmentReader.Read<string>(clienteSecretVarName, varEmptyError:
+            $"Unable to identify OktaSecret on {clienteSecretVarName} variable. Unable to start Transactional OutBox.");
+        var oktaDomain = EnvironmentReader.Read<string>(domainVarName, varEmptyError:
+            $"Unable to identify OktaDomain on {domainVarName} variable. Unable to start Transactional OutBox.");
+        var oktaAutorizationServerId = EnvironmentReader.Read<string>(autorizationServerIdVarName, varEmptyError:
+            $"Unable to identify OktaAutorizationServerId on {autorizationServerIdVarName} variable. Unable to start Transactional OutBox.");
+        var oktaAudience = EnvironmentReader.Read<string>(audienceVarName, varEmptyError:
+            $"Unable to identify OktaAudience on {audienceVarName} variable. Unable to start Transactional OutBox.");
+        OktaBuilder.AddSecurityDefinition(Builder.Services, clientId, secret, oktaDomain, oktaAutorizationServerId, oktaAudience);
+    }
+
+    public void NotUseAuthentication()
+    {
     }
 }

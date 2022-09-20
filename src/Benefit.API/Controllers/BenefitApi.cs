@@ -9,16 +9,22 @@ using Benefit.Domain.Operator;
 using Benefit.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Benefit.Service.Sagas.Beneficiary.Contract;
+using Toolkit.Authentication.Interfaces;
+using Toolkit.Authentication;
+using Microsoft.AspNetCore.Connections.Features;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MS.DDD.Microsservices.PoC.Benefit.API.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("[controller]")]
 public class BenefitApi : ManagedController
 {
-    public BenefitApi(IPublishEndpoint publisher, IBenefitRepository repository)
+    public BenefitApi(IPublishEndpoint publisher, ITokenService tokenService, IBenefitRepository repository)
     {
         _Publisher = publisher;
+        _TokenService = tokenService;
         _Repository = repository;
         _Mapper = MapperFactory.Nest<Beneficiary, BeneficiaryResponse>()
             .Nest<Beneficiary, BeneficiarySubmitted>()
@@ -27,8 +33,21 @@ public class BenefitApi : ManagedController
     }
 
     private readonly IGenericMapper _Mapper;
+    private readonly ITokenService _TokenService;
     private readonly IPublishEndpoint _Publisher;
     private readonly IBenefitRepository _Repository;
+
+    [AllowAnonymous]
+    [HttpPost("Login")]
+    public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
+    {
+        if (loginRequest == null || string.IsNullOrEmpty(loginRequest.UserName) || string.IsNullOrEmpty(loginRequest.Password))
+            return BadRequest("Invalid credentials.");
+        var oktaToken = await _TokenService.GetToken(loginRequest.UserName, loginRequest.Password);
+        if (oktaToken != null)
+            return Ok(oktaToken);
+        return null;
+    }
 
     /// <summary>Returns the registered benefits with the possibility of pagination.</summary>
     /// <param name="limit">Maximum number of results possible.</param>

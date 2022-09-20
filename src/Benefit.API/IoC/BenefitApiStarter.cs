@@ -3,6 +3,8 @@ using Benefit.Service.Infra;
 using Microsoft.OpenApi.Models;
 using Benefit.Domain.Interfaces;
 using Newtonsoft.Json.Converters;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 namespace Benefit.API.IoC;
 
