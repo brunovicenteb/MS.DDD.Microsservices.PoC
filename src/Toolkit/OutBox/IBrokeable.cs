@@ -2,6 +2,6 @@
 
 public interface IBrokeable
 {
-    public void UseRabbitMq(string rabbitMqVariableName = "RABBIT_MQ");
-    public void UseHarness();
+    public IAuthenticable UseRabbitMq(string rabbitMqVariableName = "RABBIT_MQ");
+    public IAuthenticable UseHarness();
 }

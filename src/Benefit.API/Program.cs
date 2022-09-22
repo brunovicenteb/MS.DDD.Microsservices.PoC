@@ -8,10 +8,10 @@ builder.BeginProducer<BenefitContext>()
     .UseSerilog()
     .UseTelemetry()
     .UseDatabase()
-    .UseRabbitMq();
+    .UseRabbitMq()
+    .UseOkta();
 
 builder.Services.AddEndpointsApiExplorer();
-
 builder.Services.ConfigBenefitApi();
 
 var app = builder.Build();
@@ -22,5 +22,7 @@ if (app.Environment.IsDevelopment())
 app.UseRouting();
 app.UseBenefitApi();
 app.MapControllers();
-
+app.UseCors("AllowAll");
+app.UseAuthentication();
+app.UseAuthorization();
 app.Run();

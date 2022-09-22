@@ -1,8 +1,6 @@
 ﻿using Toolkit;
 using System.Text;
 using Toolkit.Data;
-using FluentValidation;
-using Benefit.Domain.Benefit.Rules;
 
 namespace Benefit.Domain.Benefit;
 public class Beneficiary : TimeCycleEntity
@@ -37,11 +35,6 @@ public class Beneficiary : TimeCycleEntity
                 return false;
             return BirthDate.Value.AddYears(18) > DateTime.Now;
         }
-    }
-
-    public override IValidator[] GetValidators()
-    {
-        return new IValidator[] { new BeneficiaryValidator() };
     }
 
     public void Validate(StringBuilder errors)
