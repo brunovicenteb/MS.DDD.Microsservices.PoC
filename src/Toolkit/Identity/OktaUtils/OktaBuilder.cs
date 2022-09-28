@@ -1,12 +1,9 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using Okta.AspNetCore;
+using Microsoft.OpenApi.Models;
+using Toolkit.Identity.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
-using Okta.AspNetCore;
-using Toolkit.Authentication.Interfaces;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
-namespace Toolkit.Authentication.OktaUtils;
+namespace Toolkit.Identity.OktaUtils;
 
 public class OktaBuilder
 {

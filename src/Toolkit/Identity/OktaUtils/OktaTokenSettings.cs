@@ -1,4 +1,4 @@
-﻿namespace Toolkit.Authentication.OktaUtils;
+﻿namespace Toolkit.Identity.OktaUtils;
 
 public class OktaTokenSettings
 {

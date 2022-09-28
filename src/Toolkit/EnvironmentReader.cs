@@ -3,7 +3,7 @@
 public static class EnvironmentReader
 {
     public static T Read<T>(string varName, T defaultValue = default, string varEmptyError = null)
-        where T : IComparable, IConvertible, IComparable<T>, IEquatable<T>
+        where T : IComparable, IConvertible
     {
         if (varName.IsEmpty())
             throw new ArgumentNullException(nameof(varName));

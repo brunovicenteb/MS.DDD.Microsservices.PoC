@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Toolkit.Authentication.OktaUtils;
+namespace Toolkit.Identity.OktaUtils;
 
 public class OktaToken
 {

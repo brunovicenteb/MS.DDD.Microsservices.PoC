@@ -7,8 +7,9 @@ using Toolkit.MessageBroker;
 using OpenTelemetry.Resources;
 using Toolkit.TransactionalOutBox;
 using Microsoft.AspNetCore.Builder;
-using Toolkit.Authentication.OktaUtils;
 using Microsoft.Extensions.DependencyInjection;
+using Toolkit.Identity.OktaUtils;
+using Toolkit.Identity.Services;
 
 namespace Toolkit.OutBox;
 
@@ -119,6 +120,26 @@ internal abstract class OutBoxStarter : ILogable, ITelemetreable, IDatabaseable,
         return this;
     }
 
+    public void UseIdentity(string issuerVarName = "IDENTITY_ISSUER", string audienceVarName = "IDENTITY_AUDIENCE",
+        string securityKeyVarName = "IDENTITY_SECURITY_KEY", string algorithmVarName = "IDENTITY_ALGORITHM",
+        string accessTokenExpirationVarName = "IDENTITY_ACCESS_TOKEN_EXPIRATION",
+        string refreshTokenExpirationVarName = "IDENTITY_REFRESH_TOKEN_EXPIRATION")
+    {
+        var issuer = EnvironmentReader.Read<string>(issuerVarName, varEmptyError:
+            $"Unable to identify Issuer on {issuerVarName} variable. Unable to start Transactional OutBox.");
+        var audience = EnvironmentReader.Read<string>(audienceVarName, varEmptyError:
+            $"Unable to identify Audience on {audienceVarName} variable. Unable to start Transactional OutBox.");
+        var securityKey = EnvironmentReader.Read<string>(securityKeyVarName, varEmptyError:
+            $"Unable to identify Security Key on {securityKeyVarName} variable. Unable to start Transactional OutBox.");
+        var algorithm = EnvironmentReader.Read<string>(algorithmVarName, varEmptyError:
+            $"Unable to identify Algorithm on {algorithmVarName} variable. Unable to start Transactional OutBox.");
+        var accessTokenExpiration = EnvironmentReader.Read<string>(accessTokenExpirationVarName, varEmptyError:
+            $"Unable to identify Access Token Expiration on {accessTokenExpirationVarName} variable. Unable to start Transactional OutBox.");
+        var refreshTokenExpiration = EnvironmentReader.Read<string>(refreshTokenExpirationVarName, varEmptyError:
+            $"Unable to identify Refresh Token Expiration on {refreshTokenExpirationVarName} variable. Unable to start Transactional OutBox.");
+        IdentityServiceBuild.AddSecurityDefinition(Builder.Services);
+    }
+
     public void UseOkta(string clientIdVarName = "OKTA_CLIENT_ID", string clienteSecretVarName = "OKTA_SECRET",
         string domainVarName = "OKTA_DOMAIN", string autorizationServerIdVarName = "OKTA_SERVER_ID",
         string audienceVarName = "OKTA_AUDIENCE")
@@ -139,4 +160,5 @@ internal abstract class OutBoxStarter : ILogable, ITelemetreable, IDatabaseable,
     public void NotUseAuthentication()
     {
     }
+
 }

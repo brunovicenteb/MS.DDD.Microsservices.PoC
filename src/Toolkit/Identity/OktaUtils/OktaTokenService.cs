@@ -1,9 +1,9 @@
 ﻿using System.Text;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
-using Toolkit.Authentication.Interfaces;
+using Toolkit.Identity.Interfaces;
 
-namespace Toolkit.Authentication.OktaUtils;
+namespace Toolkit.Identity.OktaUtils;
 
 public class OktaTokenService : ITokenService
 {

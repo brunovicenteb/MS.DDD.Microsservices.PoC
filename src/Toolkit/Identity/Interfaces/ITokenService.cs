@@ -1,6 +1,6 @@
-﻿using Toolkit.Authentication.OktaUtils;
+﻿using Toolkit.Identity.OktaUtils;
 
-namespace Toolkit.Authentication.Interfaces;
+namespace Toolkit.Identity.Interfaces;
 
 public interface ITokenService
 {

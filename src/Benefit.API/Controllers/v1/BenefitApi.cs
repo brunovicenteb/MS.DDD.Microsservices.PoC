@@ -7,18 +7,17 @@ using Toolkit.Exceptions;
 using Benefit.Domain.Benefit;
 using Benefit.Domain.Operator;
 using Benefit.Domain.Interfaces;
+using Toolkit.Identity.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Benefit.Service.Sagas.Beneficiary.Contract;
-using Toolkit.Authentication.Interfaces;
-using Toolkit.Authentication;
-using Microsoft.AspNetCore.Connections.Features;
 using Microsoft.AspNetCore.Authorization;
+using Benefit.Service.Sagas.Beneficiary.Contract;
 
-namespace MS.DDD.Microsservices.PoC.Benefit.API.Controllers;
+namespace Benefit.API.Controllers.v1;
 
 [Authorize]
 [ApiController]
-[Route("[controller]")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/[controller]")]
 public class BenefitApi : ManagedController
 {
     public BenefitApi(IPublishEndpoint publisher, ITokenService tokenService, IBenefitRepository repository)
