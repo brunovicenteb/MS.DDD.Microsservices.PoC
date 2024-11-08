@@ -13,7 +13,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Benefit.Domain\Benefit.Domain.csproj" />
 		<ProjectReference Include="..\Toolkit\Toolkit.csproj" />
-		<PackageReference Include="Refit.HttpClientFactory" Version="6.3.2" />
+		<PackageReference Include="Refit.HttpClientFactory" Version="8.0.0" />
     <PackageReference Include="MassTransit" Version="8.0.6" />
     <PackageReference Include="MassTransit.EntityFrameworkCore" Version="8.0.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.9" />
